@@ -1,7 +1,7 @@
 name: Fetch World Bank monthly prices
 on:
   schedule:
-    - cron: "0 8 * * *"      # 08:00 UTC every day
+    - cron: "30 5 * * *"      # 05:30 UTC every day
   workflow_dispatch:          # lets you run it manually
 permissions:
   contents: write
