@@ -1,7 +1,7 @@
 name: Fetch World Bank monthly prices
 on:
   schedule:
-    - cron: "0 8 * * *"      # 08:00 UTC every day, see note below
+    - cron: "0 8 * * *"      # 08:00 UTC every day
   workflow_dispatch:          # lets you run it manually
 permissions:
   contents: write
@@ -16,6 +16,9 @@ jobs:
           URL=$(curl -sL -A "Mozilla/5.0" https://www.worldbank.org/commodities \
             | grep -oE 'https://thedocs\.worldbank\.org[^"]*CMO-Historical-Data-Monthly\.xlsx' | head -1)
           echo "Found: $URL"
+          if [ -z "$URL" ]; then
+            echo "::warning::Scraping failed, using fallback link (data may be outdated)"
+          fi
           # fallback to the November 2026 link if scraping fails
           URL=${URL:-"https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"}
           curl -fsSL -A "Mozilla/5.0" -o CMO-Historical-Data-Monthly.xlsx "$URL"
