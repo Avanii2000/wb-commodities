@@ -13,8 +13,8 @@ jobs:
 
       - name: Find current XLS link and download
         run: |
-          URL=$(curl -sL -A "Mozilla/5.0" https://www.worldbank.org/commodities \
-            | grep -oE 'https://thedocs\.worldbank\.org[^"]*CMO-Historical-Data-Monthly\.xlsx' | head -1)
+          curl -sL -A "Mozilla/5.0" https://www.worldbank.org/commodities -o page.html
+          URL=$(grep -oE 'https://thedocs\.worldbank\.org[^"]*CMO-Historical-Data-Monthly\.xlsx' page.html | head -1)
           echo "Found: $URL"
           if [ -z "$URL" ]; then
             echo "::warning::Scraping failed, using fallback link (data may be outdated)"
@@ -23,15 +23,24 @@ jobs:
           URL=${URL:-"https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"}
           curl -fsSL -A "Mozilla/5.0" -o CMO-Historical-Data-Monthly.xlsx "$URL"
 
-      - name: Extract last three values
+      - name: Extract sugar and aluminum (quick check)
         run: |
           pip install openpyxl
           python scripts/extract.py
           cat latest.md >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Build price_raw.json for the insights
+        run: |
+          python scripts/build_price_raw.py \
+            --xlsx CMO-Historical-Data-Monthly.xlsx \
+            --page page.html \
+            --out price_raw.json \
+            --insights insights.md
+          cat insights.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Commit results
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add CMO-Historical-Data-Monthly.xlsx latest.md
+          git add CMO-Historical-Data-Monthly.xlsx latest.md price_raw.json insights.md
           git diff --staged --quiet || (git commit -m "Update monthly prices" && git push)
