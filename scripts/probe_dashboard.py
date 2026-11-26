@@ -149,12 +149,16 @@ def calendar_window(values, global_latest):
 
 def build_output(results, released):
     latest = max((p for r in results.values() for p, x in r["values"].items() if x is not None), default="")
-    series, unusable = {}, {}
+    series, unusable, seen = {}, {}, {}
     for name, r in results.items():
         months, v, as_of, why = calendar_window(r["values"], latest)
         if months is None:
             unusable[name] = why
             continue
+        if tuple(v) in seen:
+            unusable[name] = "identical to %s - probably a stale read" % seen[tuple(v)]
+            continue
+        seen[tuple(v)] = name
         series[name.lower()] = {"name": name, "unit": r.get("unit", ""), "sector": r.get("sector", ""),
                                 "category": r.get("category", ""), "months": [m.replace("/", "M") for m in months],
                                 "v": v, "asOf": as_of}
@@ -366,6 +370,7 @@ def select_product(page, name):
 
 def read_table_stable(page):
     last, err = None, "table not found"
+    page.wait_for_timeout(1200)
     for _ in range(5):
         page.wait_for_timeout(800)
         vals, err = parse_table(page.evaluate(JS_CELLS))
@@ -446,15 +451,23 @@ def main():
                     note("not in the dropdown (skipped): %s" % n)
                     cov.append([n, "missing", 0, "", "", "", "", "not in the dropdown"])
 
-        failures_in_a_row, empty_in_a_row, reloads = 0, 0, 0
+        failures_in_a_row, empty_in_a_row, reloads, prev_vals = 0, 0, 0, None
         for i, name in enumerate(products):
             try:
                 if not select_product(page, name):
                     raise RuntimeError("product did not become selected")
                 info = title_info(page.inner_text("body"))
                 vals, err = read_table_stable(page)
+                for _ in range(8):  # the title changes before the table does: wait while it still shows the previous product
+                    if vals is not None and prev_vals is not None and vals == prev_vals:
+                        page.wait_for_timeout(1500)
+                        vals, err = read_table_stable(page)
+                    else:
+                        break
                 if vals is None:
                     raise RuntimeError(err)
+                if prev_vals is not None and vals == prev_vals:
+                    raise RuntimeError("the table still shows the previous product - it did not refresh")
                 if any(x is not None for x in vals.values()):
                     empty_in_a_row = 0
                 else:  # a product with no prices at all is simply unusable, but many in a row means a wrong page
@@ -469,6 +482,7 @@ def main():
                 if win:
                     r["window"] = win
                 results[name] = r
+                prev_vals = vals
                 latest = sorted(vals)[-1] if vals else ""
                 cov.append([name, "complete" if win else "gaps", len(vals), latest, r["unit"], r["sector"],
                             r["category"], why])
@@ -486,6 +500,7 @@ def main():
                     break
                 if reloads < 6:
                     reloads += 1
+                    prev_vals = None
                     try:
                         load(page)
                     except Exception:
