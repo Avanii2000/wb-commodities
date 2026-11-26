@@ -1,14 +1,21 @@
 name: EU dashboard prices (browser)
 on:
   schedule:
-    - cron: "0 6 * * 4"      # weekly, Thursday 06:00 UTC (change as you like)
+    - cron: "00 05 * * *"      # 05:00 UTC every day, an hour after the World Bank run
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Read everything even if the dashboard date is unchanged"
+        type: boolean
+        default: false
 permissions:
   contents: write
 jobs:
   dashboard:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    env:
+      FORCE: ${{ inputs.force && '1' || '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Install browser
@@ -25,6 +32,10 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "github-actions"
-          git add probe
           if [ -f price_raw_eu.json ]; then git add price_raw_eu.json; fi
-          git diff --staged --quiet || (git commit -m "EU dashboard prices" && git push)
+          if grep -qE "FAILED|stopping early|NOT overwriting" probe/dashboard/log.txt 2>/dev/null; then
+            git add probe
+          else
+            git add probe/dashboard/log.txt probe/dashboard/options.txt probe/dashboard/eu_coverage.csv 2>/dev/null || true
+          fi
+          git diff --staged --quiet || (git commit -m "EU dashboard prices" && git pull --rebase && git push)
