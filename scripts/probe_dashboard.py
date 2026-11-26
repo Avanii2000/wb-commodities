@@ -446,7 +446,7 @@ def main():
                     note("not in the dropdown (skipped): %s" % n)
                     cov.append([n, "missing", 0, "", "", "", "", "not in the dropdown"])
 
-        failures_in_a_row, reloads = 0, 0
+        failures_in_a_row, empty_in_a_row, reloads = 0, 0, 0
         for i, name in enumerate(products):
             try:
                 if not select_product(page, name):
@@ -455,8 +455,12 @@ def main():
                 vals, err = read_table_stable(page)
                 if vals is None:
                     raise RuntimeError(err)
-                if not any(x is not None for x in vals.values()):
-                    raise RuntimeError("the table has no EU values - wrong page frame or the layout changed")
+                if any(x is not None for x in vals.values()):
+                    empty_in_a_row = 0
+                else:  # a product with no prices at all is simply unusable, but many in a row means a wrong page
+                    empty_in_a_row += 1
+                    if empty_in_a_row >= 5:
+                        raise RuntimeError("the table has no EU values for 5 products in a row - wrong page frame or the layout changed")
                 if i < 2:  # raw cells of the first products, to debug the table reader offline
                     save("cells_%s.json" % re.sub(r"\W+", "_", name), json.dumps(page.evaluate(JS_CELLS)))
                 win, why = window13(vals)
