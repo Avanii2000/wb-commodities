@@ -36,6 +36,8 @@ jobs:
           if grep -qE "FAILED|stopping early|NOT overwriting" probe/dashboard/log.txt 2>/dev/null; then
             git add probe
           else
-            git add probe/dashboard/log.txt probe/dashboard/options.txt probe/dashboard/eu_coverage.csv 2>/dev/null || true
+            for f in probe/dashboard/log.txt probe/dashboard/options.txt probe/dashboard/eu_coverage.csv; do
+              if [ -f "$f" ]; then git add "$f"; fi
+            done
           fi
-          git diff --staged --quiet || (git commit -m "EU dashboard prices" && git pull --rebase && git push)
+          git diff --staged --quiet || (git commit -m "EU dashboard prices" && git pull --rebase --autostash && git push)
