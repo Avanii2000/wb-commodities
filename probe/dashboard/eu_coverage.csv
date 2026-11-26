@@ -1,0 +1,4 @@
+product,status,periods_seen,latest,unit,sector,category,note
+Apples Fuji,failed,0,,,,,dropdown label 'Cows' not found on screen
+Butter,failed,0,,,,,dropdown label 'Cows' not found on screen
+Bread Wheat,failed,0,,,,,dropdown label 'Cows' not found on screen
