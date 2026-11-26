@@ -3,9 +3,8 @@
 Read the EU column of the EU 'Monthly market prices' dashboard (a Qlik app). Single-file version.
 
   * Saves the full product dropdown to probe/dashboard/options.txt
-  * No eu_products.txt in the repo -> DIAGNOSTIC mode (tests a few products)
-  * eu_products.txt present        -> reads the EU column (latest 13 months) for each product listed
-                                      (a single line with * means: every product in the dropdown)
+  * No eu_products.txt in the repo -> reads the EU column (latest 13 months) for EVERY product in the dropdown
+  * eu_products.txt present        -> only the products listed in it (one per line; a line with * = all)
   * Writes price_raw_eu.json and probe/dashboard/eu_coverage.csv
 """
 import csv
@@ -21,7 +20,7 @@ URL = "https://agridata.ec.europa.eu/extensions/DashboardPrice/DashboardMarketPr
 OUT = "probe/dashboard"
 PRODUCTS_FILE = "eu_products.txt"
 RESULT_FILE = "price_raw_eu.json"
-DIAGNOSTIC_PRODUCTS = ["Apples Fuji", "Butter", "Bread Wheat", "Asparagus"]
+STOP_LINES = ("Show/hide container", "No title", "Loading completed")
 N_MONTHS = 13
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 PERIOD_RE = re.compile(r"^\d{4}/\d{2}$")
@@ -95,21 +94,6 @@ def parse_table(cells):
     return out, ""
 
 
-def region_texts(cells, left, right, top):
-    """texts of the open dropdown list: below `top`, within [left, right]; table noise removed"""
-    out = []
-    for c in sorted(cells, key=lambda c: (c["y"], c["x"])):
-        t = c["t"].strip()
-        if c["y"] <= top or not (left <= cx(c) <= right) or c["w"] > 300:
-            continue
-        if NUM_RE.match(t.replace(",", "")) or PERIOD_RE.match(t) or re.fullmatch(r"[A-Z]{2}", t):
-            continue
-        if t in ("Product Description", "Year/Month", "MS Code"):
-            continue
-        out.append(t)
-    return out
-
-
 def window13(vals):
     """latest 13 periods -> ((['2025M10', ...], [values]), '') or (None, reason)"""
     pers = sorted(vals, reverse=True)[:N_MONTHS]
@@ -162,31 +146,19 @@ JS_CELLS = """
   return out;
 }
 """
-JS_MARK_SCROLLER = """
-(label) => {
-  const cands = Array.from(document.querySelectorAll('*')).filter(e => {
-    const cs = getComputedStyle(e);
-    if (!(e.scrollHeight > e.clientHeight + 5) || cs.overflowY === 'visible') return false;
-    const r = e.getBoundingClientRect();
-    if (r.width < 50 || r.width > 500 || r.height < 100) return false;
-    return e.innerText.split('\\n').map(x => x.trim()).includes(label);
-  });
-  if (!cands.length) return 'no candidate';
-  cands.sort((a, b) => {
-    const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-    return ra.width * ra.height - rb.width * rb.height;
-  });
-  cands[0].setAttribute('data-probe-scroller', '1');
-  return 'ok';
-}
+JS_SELECTS = """
+() => Array.from(document.querySelectorAll('select')).map((s, i) => (
+  {i: i, texts: Array.from(s.options).map(o => o.text.trim())}))
 """
-JS_SCROLL_STEP = """
+JS_DROPDOWN_HTML = """
 () => {
-  const e = document.querySelector('[data-probe-scroller]');
-  if (!e) return null;
-  const before = e.scrollTop;
-  e.scrollTop = before + e.clientHeight * 0.8;
-  return {before: before, after: e.scrollTop, text: e.innerText, h: e.scrollHeight};
+  const out = {selects: Array.from(document.querySelectorAll('select')).map(s => (
+    {id: s.id, cls: s.className, n: s.options.length, first: Array.from(s.options).slice(0, 3).map(o => o.text.trim()),
+     html: s.parentElement ? s.parentElement.outerHTML.slice(0, 1500) : ''}))};
+  const leaf = Array.from(document.querySelectorAll('*')).find(e => e.children.length === 0 && e.textContent.trim() === 'Product Description');
+  out.leaf = leaf ? leaf.tagName + '.' + leaf.className : null;
+  out.leafHtml = leaf && leaf.parentElement && leaf.parentElement.parentElement ? leaf.parentElement.parentElement.outerHTML.slice(0, 3000) : '';
+  return JSON.stringify(out, null, 1);
 }
 """
 
@@ -272,15 +244,6 @@ def current_product(page):
         return None
 
 
-def find_visible(page, text):
-    loc = page.get_by_text(text, exact=True)
-    for i in range(loc.count()):
-        el = loc.nth(i)
-        if el.is_visible():
-            return el
-    return None
-
-
 def load(page):
     page.goto(URL, wait_until="domcontentloaded", timeout=120000)
     found = page.find_dashboard_frame(90)
@@ -304,50 +267,44 @@ def load(page):
         pass
 
 
-def read_all_options(page):
-    label = current_product(page)
-    el = find_visible(page, label) if label else None
-    if el is None:
-        raise RuntimeError("dropdown label %r not found on screen" % label)
-    box = el.bounding_box()  # page coordinates (for the mouse)
-    fbox = el.evaluate("e => { const r = e.getBoundingClientRect(); return {x: r.x, y: r.y, width: r.width, height: r.height}; }")
-    el.click(timeout=20000)
-    page.wait_for_timeout(1500)
-    shot(page, "02_dropdown_open.png")
-    left, right, top = fbox["x"] - 40, fbox["x"] + 300, fbox["y"] + fbox["height"]  # frame coordinates (text cells)
-    page.mouse.move(box["x"] + 60, box["y"] + box["height"] + 150)
-    seen, order, quiet = set(), [], 0
-    for _ in range(1200):
-        new = 0
-        for t in region_texts(page.evaluate(JS_CELLS), left, right, top):
-            if t not in seen:
-                seen.add(t)
-                order.append(t)
-                new += 1
-        quiet = quiet + 1 if new == 0 else 0
-        if quiet >= 6:
+def product_select(page):
+    """-> (index of the product <select> in the dashboard frame, its option texts) or (None, [])"""
+    try:
+        for info in page.evaluate(JS_SELECTS):
+            if "Product Description" in info["texts"] or len(info["texts"]) >= 20:
+                return info["i"], info["texts"]
+    except Exception:
+        pass
+    return None, []
+
+
+def options_from_text(body):
+    """fallback: the product list is printed in the page text right after the 'Product Description' line"""
+    lines = [ln.strip() for ln in body.split("\n")]
+    if "Product Description" not in lines:
+        return []
+    out = []
+    for ln in lines[lines.index("Product Description") + 1:]:
+        if not ln or ln in STOP_LINES:
             break
-        page.mouse.wheel(0, 200)
-        page.wait_for_timeout(180)
-    note("options read by mouse wheel: %d" % len(order))
-    if len(order) < 20:  # fallback: find the scrolling container in the page and scroll it
-        note("few options - trying the scroll-container method; mark: " + page.evaluate(JS_MARK_SCROLLER, label))
-        for _ in range(800):
-            r = page.evaluate(JS_SCROLL_STEP)
-            if not r:
-                break
-            for line in r["text"].split("\n"):
-                line = line.strip()
-                if line and line != "Product Description" and line not in seen:
-                    seen.add(line)
-                    order.append(line)
-            if r["after"] == r["before"]:
-                break
-            page.wait_for_timeout(200)
+        out.append(ln)
+    return out
+
+
+def read_all_options(page):
+    try:
+        save("dropdown_html.json", page.evaluate(JS_DROPDOWN_HTML))
+    except Exception as e:
+        note("dropdown html dump failed: %s" % e)
+    idx, texts = product_select(page)
+    if idx is not None:
+        order = [t for t in texts if t and t != "Product Description"]
+        note("options read from the <select> element: %d" % len(order))
+    else:
+        order = options_from_text(page.inner_text("body"))
+        note("no <select> found; options read from the page text: %d" % len(order))
     save("options.txt", "\n".join(order) + "\n")
     note("dropdown options collected: %d (probe/dashboard/options.txt)" % len(order))
-    page.keyboard.press("Escape")
-    page.wait_for_timeout(800)
     return order
 
 
@@ -355,20 +312,13 @@ def select_product(page, name):
     cur = current_product(page)
     if cur and cur.lower() == name.lower():
         return True
-    el = find_visible(page, cur) if cur else None
-    if el is None:
-        raise RuntimeError("dropdown label %r not found on screen" % cur)
-    el.click(timeout=20000)
-    page.wait_for_timeout(700)
-    page.keyboard.type(name, delay=30)
-    page.wait_for_timeout(900)
-    try:
-        opt = find_visible(page, name)
-        if opt is None:
-            raise RuntimeError("option not visible")
-        opt.click(timeout=3000)
-    except Exception:
-        page.keyboard.press("Enter")
+    idx, texts = product_select(page)
+    if idx is None:
+        raise RuntimeError("no product <select> in the dashboard frame (see dropdown_html.json)")
+    label = next((t for t in texts if t.lower() == name.lower()), None)
+    if label is None:
+        raise RuntimeError("%r is not in the dropdown" % name)
+    page.frame.locator("select").nth(idx).select_option(label=label, force=True, timeout=15000)
     for _ in range(40):
         cur = current_product(page)
         if cur and cur.lower() == name.lower():
@@ -406,7 +356,7 @@ def write_coverage(rows):
 
 def main():
     wanted = read_products_file()
-    mode = "diagnostic" if wanted is None else ("all" if wanted == ["*"] else "list")
+    mode = "all" if wanted is None or wanted == ["*"] else "list"
     note("mode: %s" % mode)
     results, cov = {}, []
     with sync_playwright() as p:
@@ -433,16 +383,17 @@ def main():
             note("OPTIONS FAILED:\n" + traceback.format_exc())
             shot(page, "02_options_failed.png", force=True)
 
-        if mode == "diagnostic":
-            products = DIAGNOSTIC_PRODUCTS
-        elif mode == "all":
+        if mode == "all":
             products = options
+            if not options:
+                note("no options found - nothing to read")
         else:
-            products = wanted
             lower = {o.lower() for o in options}
-            missing = [n for n in wanted if options and n.lower() not in lower]
-            if missing:
-                note("not in the dropdown: %s" % missing)
+            products = [n for n in wanted if not options or n.lower() in lower]
+            for n in wanted:
+                if options and n.lower() not in lower:
+                    note("not in the dropdown (skipped): %s" % n)
+                    cov.append([n, "missing", 0, "", "", "", "", "not in the dropdown"])
 
         failures_in_a_row, reloads = 0, 0
         for i, name in enumerate(products):
@@ -453,6 +404,8 @@ def main():
                 vals, err = read_table_stable(page)
                 if vals is None:
                     raise RuntimeError(err)
+                if i < 2:  # raw cells of the first products, to debug the table reader offline
+                    save("cells_%s.json" % re.sub(r"\W+", "_", name), json.dumps(page.evaluate(JS_CELLS)))
                 win, why = window13(vals)
                 r = {"unit": info.get("unit", ""), "sector": info.get("sector", ""),
                      "category": info.get("category", ""), "values": vals, "note": why}
@@ -471,8 +424,8 @@ def main():
                 note("PRODUCT %s FAILED: %s" % (name, e))
                 cov.append([name, "failed", 0, "", "", "", "", str(e)[:150]])
                 shot(page, "03_failed_%s.png" % re.sub(r"\W+", "_", name))
-                if i < 3 and failures_in_a_row >= 3:
-                    note("first three products all failed - stopping early")
+                if failures_in_a_row >= 5:
+                    note("5 products failed in a row - stopping early")
                     break
                 if reloads < 6:
                     reloads += 1
@@ -484,16 +437,21 @@ def main():
 
     write_coverage(cov)
     out = build_output(results, released)
-    target = os.path.join(OUT, "diagnostic_result.json") if mode == "diagnostic" else RESULT_FILE
-    if mode != "diagnostic" and os.path.exists(RESULT_FILE):
+    target = RESULT_FILE
+    failed = sum(1 for r in cov if r[1] == "failed")
+    prev = 0
+    if os.path.exists(RESULT_FILE):
         try:
             prev = len(json.load(open(RESULT_FILE, encoding="utf-8")).get("series", {}))
         except Exception:
             prev = 0
-        if prev and len(out["series"]) < 0.5 * prev:
-            note("only %d series read vs %d before - NOT overwriting %s" % (len(out["series"]), prev, RESULT_FILE))
-            target = os.path.join(OUT, "rejected_result.json")
-    if out["series"] or mode == "diagnostic":
+    if failed > 0.5 * len(products):
+        note("%d of %d products failed - NOT overwriting %s" % (failed, len(products), RESULT_FILE))
+        target = os.path.join(OUT, "rejected_result.json")
+    elif mode == "all" and prev and len(out["series"]) < 0.5 * prev:
+        note("only %d series read vs %d before - NOT overwriting %s" % (len(out["series"]), prev, RESULT_FILE))
+        target = os.path.join(OUT, "rejected_result.json")
+    if out["series"]:
         os.makedirs(os.path.dirname(target) or ".", exist_ok=True)
         with open(target, "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, indent=1)
