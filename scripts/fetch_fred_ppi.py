@@ -4,8 +4,12 @@ Fetch the US Producer Price Index by commodity (FRED release 46, Table 9, goods)
 lowest-level series that has recent prices.
 
 What it does
-  * reads the whole Table 9 tree through the official FRED API (release/tables), one request per month
-    (about 16 requests); falls back to one request per bucket if the API returns a shallow tree
+  * first asks FRED for the latest release date (1 request): if it equals the date stored in price_raw_us.json
+    nothing has changed and the run ends at once (PPI is published once a month); set FORCE=1 to fetch anyway
+  * otherwise reads Table 9 one bucket at a time through the official FRED API (release/tables), 15 months each
+    (about 400 requests, roughly 12 minutes); FRED's top-level request only returns the bucket headers
+  * animal-feed series (the "Prepared animal feeds" group and any series named feed or hay, except "feed grade"
+    dairy items) are left out of the food buckets
   * lowest level = a series row that has no child rows
   * for each lowest-level series keeps 13 calendar months ending at its latest priced month, only when
     that month is at most 2 months older than the newest month in the table and at least 6 of the 12
@@ -45,6 +49,10 @@ BUCKETS = [("142101", "Goods"), ("142105", "Farm Products"), ("142257", "Process
            ("145670", "Miscellaneous Instruments"), ("145671", "Miscellaneous Machinery"),
            ("144335", "Furniture and Household Durables"), ("144478", "Nonmetallic Mineral Products"),
            ("144620", "Transportation Equipment"), ("144747", "Miscellaneous Products")]
+VERSION = 2            # bump when the output format changes: forces one fresh fetch
+FORCE = os.environ.get("FORCE", "").strip() not in ("", "0")
+FOOD_BUCKETS = ("Farm Products", "Processed foods and feeds")
+FEED_RX = re.compile(r"\bfeeds?\b(?!\s+grade)|\bhay\b", re.I)
 FETCH_MONTHS = 15      # 13 months plus 2 months of slack for series whose latest price is older
 N_MONTHS = 13
 MAX_LAG = 2
@@ -53,7 +61,7 @@ MIN_ROOT_SERIES = int(os.environ.get("FRED_MIN_ROOT", "1500"))  # fewer than thi
 OUT = "probe/fred"
 RESULT = "price_raw_us.json"
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-LOG, CALLS, MODE, BAD_BUCKETS = [], [0], ["root"], set()
+LOG, CALLS, MODE, BAD_BUCKETS = [], [0], [os.environ.get("FRED_MODE", "buckets")], set()
 
 
 def log(msg):
@@ -227,6 +235,12 @@ def calendar_window(values, global_latest):
     return months, v, month_label(last), ""
 
 
+def is_feed(e):
+    if e["bucket"] not in FOOD_BUCKETS:
+        return False
+    return "prepared animal feeds" in e["path"].lower() or bool(FEED_RX.search(e["name"]))
+
+
 def release_date():
     try:
         d = api("release/dates", {"release_id": RELEASE_ID, "sort_order": "desc", "limit": 5})
@@ -244,6 +258,15 @@ def main():
         log("FRED_API_KEY is not set. Add it in the repository: Settings > Secrets and variables > Actions > New repository secret.")
         finish(1)
     try:
+        released = release_date()
+        if released and not FORCE and os.path.exists(RESULT):
+            try:
+                prev = json.load(open(RESULT, encoding="utf-8"))
+            except Exception:
+                prev = {}
+            if prev.get("released") == released and prev.get("version") == VERSION and prev.get("series"):
+                print("US producer prices are already up to date (released %s, data to %s): nothing to fetch" % (released, prev.get("asOf")), flush=True)
+                sys.exit(0)
         tree0 = fetch_all(None)
         n_series = sum(1 for e in tree0.values() if e.get("sid"))
         if MODE[0] == "root" and n_series < MIN_ROOT_SERIES:
@@ -269,7 +292,8 @@ def main():
         months = [shift_month(latest, -k) for k in range(FETCH_MONTHS - 1, -1, -1)]
         sids = {e["sid"]: e for e in leaves}
         vals, mismatch = defaultdict(dict), 0
-        for ym in months:
+        for n_m, ym in enumerate(months, 1):
+            print("fetching %s (%d of %d)" % (month_label(ym), n_m, len(months)), flush=True)
             tree = fetch_all("%s-01" % ym.replace("/", "-"))
             for e in tree.values():
                 sid = e.get("sid")
@@ -281,14 +305,17 @@ def main():
                     v = None
                 vals[sid][ym] = v
         log("requests made: %d | values whose month label did not match the month asked for (ignored): %d" % (CALLS[0], mismatch))
-        released = release_date()
-        series, unusable, rows = {}, {}, []
+        series, unusable, excluded, rows = {}, {}, {}, []
         per_bucket = defaultdict(lambda: [0, 0])
         for e in sorted(sids.values(), key=lambda x: (x["bucket"], x["path"], x["sid"])):
             sid = e["sid"]
             v13m, v13, asof, why = calendar_window(vals.get(sid, {}), latest)
             priced = [p for p in months if vals.get(sid, {}).get(p) is not None]
             per_bucket[e["bucket"]][0] += 1
+            if is_feed(e):
+                excluded[sid] = "animal feed"
+                rows.append([sid, e["name"], e["bucket"], len(priced), month_label(priced[-1]) if priced else "", "excluded", "animal feed", e["path"]])
+                continue
             if v13m:
                 per_bucket[e["bucket"]][1] += 1
                 series[sid.lower()] = {"id": sid, "name": e["name"], "bucket": e["bucket"], "path": e["path"], "unit": "Index",
@@ -299,9 +326,9 @@ def main():
             rows.append([sid, e["name"], e["bucket"], len(priced), month_label(priced[-1]) if priced else "", "usable" if v13m else "unusable", why, e["path"]])
         out = {"source": "US Bureau of Labor Statistics, Producer Price Index by Commodity, not seasonally adjusted (FRED release 46, Table 9)",
                "attribution": "This product uses the FRED API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.",
-               "released": released, "asOf": month_label(latest), "series": series, "unusable": unusable}
+               "version": VERSION, "released": released, "asOf": month_label(latest), "series": series, "unusable": unusable, "excluded": excluded}
         reasons = Counter(re.sub(r"[0-9]+", "N", w).replace("latest price ", "latest price: ") if w.startswith("stale") else re.sub(r"\d+", "N", w) for w in unusable.values())
-        log("usable series: %d | unusable: %d | released: %s | asOf: %s" % (len(series), len(unusable), released or "unknown", month_label(latest)))
+        log("usable series: %d | unusable: %d | excluded as animal feed: %d | released: %s | asOf: %s" % (len(series), len(unusable), len(excluded), released or "unknown", month_label(latest)))
         for r_, c in reasons.most_common():
             log("   unusable (%s): %d" % (r_, c))
         log("per bucket (lowest-level series / usable):")
