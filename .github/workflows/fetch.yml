@@ -43,4 +43,4 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add CMO-Historical-Data-Monthly.xlsx latest.md price_raw.json insights.md
-          git diff --staged --quiet || (git commit -m "Update monthly prices" && git push)
+          git diff --staged --quiet || (git commit -m "Update monthly prices" && git pull --rebase --autostash && git push)
