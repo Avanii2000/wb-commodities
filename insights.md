@@ -12,9 +12,11 @@ As of Oct 2026, released 3 Nov 2026.
 | Wheat, US HRW ($/mt) | 317.0 | 280.083 | +13.2% | - |
 | Copper ($/mt) | 14508.0 | 12851.500 | +12.9% | rising |
 | Zinc ($/mt) | 3818.0 | 3424.667 | +11.5% | - |
+| Iron ore, cfr spot ($/dmtu) | 90.8 | 102.258 | -11.2% | - |
 | Beef ($/kg) | 6.83 | 7.612 | -10.3% | falling |
 | Coconut oil ($/mt) | 2029.0 | 2215.167 | -8.4% | - |
 | Lamb ($/kg) | 7.48 | 6.910 | +8.2% | - |
+| Nickel ($/mt) | 15436.0 | 16728.917 | -7.7% | - |
 | Maize ($/mt) | 226.5 | 211.408 | +7.1% | - |
 | Soybean oil ($/mt) | 1546.0 | 1448.417 | +6.7% | falling |
 | Potassium chloride ($/mt) | 357.5 | 378.575 | -5.6% | falling |
