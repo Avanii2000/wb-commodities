@@ -53,19 +53,21 @@ JS_CELLS = """
 }
 """
 JS_MARK_SCROLLER = """
-(text) => {
-  const hit = Array.from(document.querySelectorAll('*'))
-    .find(e => e.children.length === 0 && e.textContent.trim() === text);
-  if (!hit) return 'option text not found';
-  let e = hit;
-  while (e && e !== document.body) {
-    if (e.scrollHeight > e.clientHeight + 5 && getComputedStyle(e).overflowY !== 'visible') {
-      e.setAttribute('data-probe-scroller', '1');
-      return 'ok';
-    }
-    e = e.parentElement;
-  }
-  return 'no scrollable parent';
+(label) => {
+  const cands = Array.from(document.querySelectorAll('*')).filter(e => {
+    const cs = getComputedStyle(e);
+    if (!(e.scrollHeight > e.clientHeight + 5) || cs.overflowY === 'visible') return false;
+    const r = e.getBoundingClientRect();
+    if (r.width < 50 || r.width > 500 || r.height < 100) return false;
+    return e.innerText.split('\\n').map(x => x.trim()).includes(label);
+  });
+  if (!cands.length) return 'no candidate';
+  cands.sort((a, b) => {
+    const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    return ra.width * ra.height - rb.width * rb.height;
+  });
+  cands[0].setAttribute('data-probe-scroller', '1');
+  return 'ok';
 }
 """
 JS_SCROLL_STEP = """
@@ -120,13 +122,19 @@ def parse_table(cells):
     if hdr is None:
         return None, "EU header with period rows below it not found"
     x0 = cx(hdr)
+    # tolerances from the real geometry: distance to the next country header, and row pitch
+    nxt = [cx(c) for c in cells if abs(c["y"] - hdr["y"]) <= 6 and cx(c) > x0 + 5 and re.fullmatch(r"[A-Z]{2}", c["t"])]
+    col_tol = max(18.0, 0.45 * (min(nxt) - x0)) if nxt else COL_TOLERANCE
+    ys = sorted({cy(p) for p in periods.values() if p["y"] > hdr["y"]})
+    gaps = [b - a for a, b in zip(ys, ys[1:]) if b - a > 4]
+    row_tol = max(6.0, 0.45 * min(gaps)) if gaps else ROW_TOLERANCE
     out = {}
     for per, pc in periods.items():
         if pc["y"] <= hdr["y"] or cx(pc) >= x0:
             continue
         val = None
         for c in cells:
-            if c is pc or abs(cx(c) - x0) > COL_TOLERANCE or abs(cy(c) - cy(pc)) > ROW_TOLERANCE:
+            if c is pc or abs(cx(c) - x0) > col_tol or abs(cy(c) - cy(pc)) > row_tol:
                 continue
             t = c["t"].replace(",", "").strip()
             if NUM_RE.match(t):
@@ -134,6 +142,21 @@ def parse_table(cells):
                 break
         out[per] = val
     return out, ""
+
+
+def region_texts(cells, left, right, top):
+    """texts of the open dropdown list: below `top`, within [left, right]; table noise removed"""
+    out = []
+    for c in sorted(cells, key=lambda c: (c["y"], c["x"])):
+        t = c["t"].strip()
+        if c["y"] <= top or not (left <= cx(c) <= right) or c["w"] > 300:
+            continue
+        if NUM_RE.match(t.replace(",", "")) or PERIOD_RE.match(t) or re.fullmatch(r"[A-Z]{2}", t):
+            continue
+        if t in ("Product Description", "Year/Month", "MS Code"):
+            continue
+        out.append(t)
+    return out
 
 
 def window13(vals):
@@ -200,184 +223,6 @@ def current_product(page):
         return None
 
 
-def load(page):
-    page.goto(URL, wait_until="domcontentloaded", timeout=120000)
-    page.get_by_text("Year/Month", exact=False).first.wait_for(timeout=120000)
-    page.wait_for_timeout(10000)
-
-
-def read_all_options(page):
-    label = current_product(page) or "Apples Fuji"
-    page.get_by_text(label, exact=True).first.click(timeout=20000)
-    page.wait_for_timeout(1500)
-    shot(page, "02_dropdown_open.png")
-    note("mark scroller: " + page.evaluate(JS_MARK_SCROLLER, "Apples Boskoop"))
-    seen, order, stuck = set(), [], 0
-    for _ in range(800):
-        r = page.evaluate(JS_SCROLL_STEP)
-        if not r:
-            break
-        for line in r["text"].split("\n"):
-            line = line.strip()
-            if line and line != "Product Description" and line not in seen:
-                seen.add(line)
-                order.append(line)
-        stuck = stuck + 1 if r["after"] == r["before"] else 0
-        if stuck >= 2:
-            break
-        page.wait_for_timeout(200)
-    save("options.txt", "\n".join(order) + "\n")
-    note("dropdown options collected: %d (probe/dashboard/options.txt)" % len(order))
-    page.keyboard.press("Escape")
-    page.wait_for_timeout(800)
-    return order
-
-
-def select_product(page, name):
-    cur = current_product(page)
-    if cur and cur.lower() == name.lower():
-        return True
-    page.get_by_text(cur or "Apples Fuji", exact=True).first.click(timeout=20000)
-    page.wait_for_timeout(700)
-    page.keyboard.type(name, delay=30)
-    page.wait_for_timeout(900)
-    try:
-        page.get_by_text(name, exact=True).first.click(timeout=3000)
-    except Exception:
-        page.keyboard.press("Enter")
-    for _ in range(40):
-        cur = current_product(page)
-        if cur and cur.lower() == name.lower():
-            return True
-        page.wait_for_timeout(500)
-    return False
-
-
-def read_table_stable(page):
-    last, err = None, "table not found"
-    for _ in range(5):
-        page.wait_for_timeout(800)
-        vals, err = parse_table(page.evaluate(JS_CELLS))
-        if vals is not None and last is not None and vals == last:
-            return vals, ""
-        last = vals
-    return last, ("" if last else err)
-
-
-def read_products_file():
-    if not os.path.exists(PRODUCTS_FILE):
-        return None
-    names = [ln.strip() for ln in open(PRODUCTS_FILE, encoding="utf-8") if ln.strip() and not ln.startswith("#")]
-    return names or None
-
-
-def write_coverage(rows):
-    os.makedirs(OUT, exist_ok=True)
-    with open(os.path.join(OUT, "eu_coverage.csv"), "w", encoding="utf-8", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["product", "status", "periods_seen", "latest", "unit", "sector", "category", "note"])
-        w.writerows(rows)
-
-
-def main():
-    wanted = read_products_file()
-    mode = "diagnostic" if wanted is None else ("all" if wanted == ["*"] else "list")
-    note("mode: %s" % mode)
-    results, cov = {}, []
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 2300, "height": 1400})
-        try:
-            load(page)
-            shot(page, "01_loaded.png")
-            body = page.inner_text("body")
-            save("page_text.txt", body)
-            released = parse_last_update(body)
-            note("loaded; last update on page: %s; title: %s" % (released, title_info(body)))
-        except Exception:
-            note("LOAD FAILED:\n" + traceback.format_exc())
-            shot(page, "01_load_failed.png", force=True)
-            save("log.txt", "\n".join(LOG))
-            browser.close()
-            return
-
-        options = []
-        try:
-            options = read_all_options(page)
-        except Exception:
-            note("OPTIONS FAILED:\n" + traceback.format_exc())
-            shot(page, "02_options_failed.png", force=True)
-
-        if mode == "diagnostic":
-            products = DIAGNOSTIC_PRODUCTS
-        elif mode == "all":
-            products = options
-        else:
-            products = wanted
-            lower = {o.lower() for o in options}
-            missing = [n for n in wanted if options and n.lower() not in lower]
-            if missing:
-                note("not in the dropdown: %s" % missing)
-
-        failures_in_a_row, reloads = 0, 0
-        for i, name in enumerate(products):
-            try:
-                if not select_product(page, name):
-                    raise RuntimeError("product did not become selected")
-                info = title_info(page.inner_text("body"))
-                vals, err = read_table_stable(page)
-                if vals is None:
-                    raise RuntimeError(err)
-                win, why = window13(vals)
-                r = {"unit": info.get("unit", ""), "sector": info.get("sector", ""),
-                     "category": info.get("category", ""), "values": vals, "note": why}
-                if win:
-                    r["window"] = win
-                results[name] = r
-                latest = sorted(vals)[-1] if vals else ""
-                cov.append([name, "ok" if win else "incomplete", len(vals), latest, r["unit"], r["sector"],
-                            r["category"], why])
-                if i < 3 or not win:
-                    shot(page, "03_%s.png" % re.sub(r"\W+", "_", name))
-                note("%s: %s%s" % (name, "ok" if win else "incomplete", "" if win else " (%s)" % why))
-                failures_in_a_row = 0
-            except Exception as e:
-                failures_in_a_row += 1
-                note("PRODUCT %s FAILED: %s" % (name, e))
-                cov.append([name, "failed", 0, "", "", "", "", str(e)[:150]])
-                shot(page, "03_failed_%s.png" % re.sub(r"\W+", "_", name))
-                if i < 3 and failures_in_a_row >= 3:
-                    note("first three products all failed - stopping early")
-                    break
-                if reloads < 6:
-                    reloads += 1
-                    try:
-                        load(page)
-                    except Exception:
-                        note("reload failed")
-        browser.close()
-
-    write_coverage(cov)
-    out = build_output(results, released)
-    target = os.path.join(OUT, "diagnostic_result.json") if mode == "diagnostic" else RESULT_FILE
-    if mode != "diagnostic" and os.path.exists(RESULT_FILE):
-        try:
-            prev = len(json.load(open(RESULT_FILE, encoding="utf-8")).get("series", {}))
-        except Exception:
-            prev = 0
-        if prev and len(out["series"]) < 0.5 * prev:
-            note("only %d series read vs %d before - NOT overwriting %s" % (len(out["series"]), prev, RESULT_FILE))
-            target = os.path.join(OUT, "rejected_result.json")
-    if out["series"] or mode == "diagnostic":
-        os.makedirs(os.path.dirname(target) or ".", exist_ok=True)
-        with open(target, "w", encoding="utf-8") as f:
-            json.dump(out, f, ensure_ascii=False, indent=1)
-        note("wrote %s: %d series, %d incomplete" % (target, len(out["series"]), len(out["incomplete"])))
-    save("log.txt", "\n".join(LOG))
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception:
-        save("log.txt", "\n".join(LOG) + "\nFATAL:\n" + traceback.format_exc())
+def find_visible(page, text):
+    loc = page.get_by_text(text, exact=True)
+    for i
