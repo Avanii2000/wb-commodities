@@ -1,0 +1,46 @@
+root request returned only 0 series rows, so the tree looks shallow: switching to one request per bucket
+mode: buckets | table rows read: 2807 | series rows: 2778 | lowest-level series: 1507
+newest month with prices: Oct 2026 (903 lowest-level series have it)
+requests made: 403 | values whose month label did not match the month asked for (ignored): 0
+usable series: 930 | unusable: 577 | released: 13 Nov 2026 | asOf: Oct 2026
+   unusable (no prices in the last N months): 510
+   unusable (stale: latest price: May N): 17
+   unusable (stale: latest price: Jun N): 8
+   unusable (only N of N earlier months priced): 8
+   unusable (stale: latest price: Jul N): 7
+   unusable (stale: latest price: Dec N): 7
+   unusable (stale: latest price: Apr N): 5
+   unusable (stale: latest price: Aug N): 3
+   unusable (stale: latest price: Oct N): 3
+   unusable (stale: latest price: Feb N): 3
+   unusable (stale: latest price: Nov N): 2
+   unusable (stale: latest price: Mar N): 2
+   unusable (stale: latest price: Jan N): 2
+per bucket (lowest-level series / usable):
+   Agricultural Machinery and Equipment              9 /    8
+   Chemicals and allied products                   130 /   94
+   Construction Machinery and Equipment             12 /   10
+   Electrical Machinery and Equipment               66 /   37
+   Electronic Computers and Computer Equipment       8 /    6
+   Farm Products                                    93 /   75
+   Fuels and related products and power             37 /   30
+   Furniture and Household Durables                 70 /   32
+   General Purpose Machinery and Equipment          84 /   54
+   Goods                                             3 /    3
+   Hides, skins, leather, and related products      11 /    0
+   Lumber and Wood Products                         50 /   39
+   Machinery and Equipment                           1 /    1
+   Metal and Metal Products                        197 /   99
+   Metalworking Machinery and Equipment             35 /   23
+   Miscellaneous Instruments                        14 /   10
+   Miscellaneous Machinery                          22 /    7
+   Miscellaneous Products                           72 /   27
+   Nonmetallic Mineral Products                     67 /   52
+   Processed foods and feeds                       184 /  154
+   Pulp, Paper, and Allied Products                100 /   46
+   Rubber and plastic products                      49 /   39
+   Special Industry Machinery and Equipment         28 /   12
+   Textile products and apparel                     95 /   29
+   Transportation Equipment                         70 /   43
+check, Grapefruits WPU01110101: [625.159, 625.159, 598.746, 588.366, 588.366, None]
+wrote price_raw_us.json
