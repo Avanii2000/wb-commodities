@@ -26,7 +26,7 @@ import sys
 
 import openpyxl
 
-# (display name, unit) - the same 26 series, names and units the artifact uses today.
+# (display name, unit) - the 28 series, names and units the artifact uses (Iron ore and Nickel added for Steel and Stainless Steel).
 SERIES = [
     ("Cocoa", "$/kg"), ("Coffee, Arabica", "$/kg"), ("Tea, avg 3 auctions", "$/kg"),
     ("Coconut oil", "$/mt"), ("Groundnut oil", "$/mt"), ("Palm oil", "$/mt"),
@@ -37,6 +37,7 @@ SERIES = [
     ("Sawnwood, Cameroon", "$/cubic meter"), ("Sawnwood, Malaysian", "$/cubic meter"),
     ("Urea", "$/mt"), ("Potassium chloride", "$/mt"), ("Aluminum", "$/mt"),
     ("Copper", "$/mt"), ("Zinc", "$/mt"),
+    ("Iron ore, cfr spot", "$/dmtu"), ("Nickel", "$/mt"),
 ]
 N_MONTHS = 13
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
