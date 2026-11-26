@@ -3,9 +3,13 @@
 Read the EU column of the EU 'Monthly market prices' dashboard (a Qlik app). Single-file version.
 
   * Saves the full product dropdown to probe/dashboard/options.txt
-  * No eu_products.txt in the repo -> reads the EU column (latest 13 months) for EVERY product in the dropdown
+  * No eu_products.txt in the repo -> reads the EU column for EVERY product in the dropdown, then keeps each product's
+                                      13 calendar months ending at its latest price (usable: at most 2 months old, 6+ of
+                                      the 12 earlier months priced)
   * eu_products.txt present        -> only the products listed in it (one per line; a line with * = all)
   * Writes price_raw_eu.json and probe/dashboard/eu_coverage.csv
+  * Daily check: if the dashboard's "Last update" date equals the one in price_raw_eu.json, it stops straight away
+    (set the FORCE environment variable to read everything anyway)
 """
 import csv
 import json
@@ -113,20 +117,50 @@ def month_label(m):
     return "%s %s" % (MON[int(m[5:]) - 1], m[:4])
 
 
+MAX_LAG = 2      # a product's latest priced month may be at most this many months behind the dashboard's latest
+MIN_PRIOR = 6    # and at least this many of the 12 months before it must have a price
+
+
+def month_idx(p):
+    return int(p[:4]) * 12 + int(p[5:7]) - 1
+
+
+def shift_month(p, n):
+    k = month_idx(p) + n
+    return "%d/%02d" % (k // 12, k % 12 + 1)
+
+
+def calendar_window(values, global_latest):
+    """values {'2026/10': price or None} -> (13 calendar months ending at the latest priced month, prices with
+    None for unpriced months, 'Oct 2026', '') or (None, None, None, reason why the product is not usable)"""
+    have = sorted(p for p, x in values.items() if x is not None)
+    if not have:
+        return None, None, None, "no prices"
+    last = have[-1]
+    if month_idx(global_latest) - month_idx(last) > MAX_LAG:
+        return None, None, None, "stale: latest price %s" % month_label(last)
+    months = [shift_month(last, -k) for k in range(N_MONTHS - 1, -1, -1)]
+    v = [values.get(m) for m in months]
+    prior = sum(1 for x in v[:-1] if x is not None)
+    if prior < MIN_PRIOR:
+        return None, None, None, "only %d of 12 earlier months priced" % prior
+    return months, v, month_label(last), ""
+
+
 def build_output(results, released):
-    series, incomplete, latest = {}, {}, ""
+    latest = max((p for r in results.values() for p, x in r["values"].items() if x is not None), default="")
+    series, unusable = {}, {}
     for name, r in results.items():
-        if r.get("window"):
-            months, values = r["window"]
-            series[name.lower()] = {"name": name, "unit": r.get("unit", ""), "sector": r.get("sector", ""),
-                                    "category": r.get("category", ""), "months": months, "v": values}
-            latest = max(latest, months[-1])
-        elif r.get("values"):
-            last = sorted(r["values"], reverse=True)[:24]
-            incomplete[name] = {"reason": r.get("note", ""), "unit": r.get("unit", ""),
-                                "values": {p: r["values"][p] for p in last}}
+        months, v, as_of, why = calendar_window(r["values"], latest)
+        if months is None:
+            unusable[name] = why
+            continue
+        series[name.lower()] = {"name": name, "unit": r.get("unit", ""), "sector": r.get("sector", ""),
+                                "category": r.get("category", ""), "months": [m.replace("/", "M") for m in months],
+                                "v": v, "asOf": as_of}
     return {"source": "EU Agri-food data portal, Monthly market prices (EU column)", "released": released,
-            "asOf": month_label(latest) if latest else "", "series": series, "incomplete": incomplete}     
+            "asOf": month_label(latest) if latest else "", "series": series, "unusable": unusable}
+
 
 # ======================================================================== PART 2: browser helpers
 JS_CELLS = """
@@ -339,6 +373,15 @@ def read_table_stable(page):
 
 # ======================================================================== PART 3: main program
 
+def already_current(released):
+    """True when price_raw_eu.json came from this same dashboard release and is in the current format."""
+    try:
+        prev = json.load(open(RESULT_FILE, encoding="utf-8"))
+    except Exception:
+        return False
+    return prev.get("released") == released and "unusable" in prev and bool(prev.get("series"))
+
+
 def read_products_file():
     if not os.path.exists(PRODUCTS_FILE):
         return None
@@ -364,10 +407,15 @@ def main():
         page = Ctx(browser.new_page(viewport={"width": 2300, "height": 1400}))
         try:
             load(page)
-            shot(page, "01_loaded.png")
             body = page.inner_text("body")
-            save("page_text.txt", body)
             released = parse_last_update(body)
+            if mode == "all" and released and not os.environ.get("FORCE") and already_current(released):
+                note("mode: all | dashboard last update is still %s - data already up to date, nothing to read" % released)
+                save("log.txt", "\n".join(LOG))
+                browser.close()
+                return
+            shot(page, "01_loaded.png")
+            save("page_text.txt", body)
             note("loaded; last update on page: %s; title: %s" % (released, title_info(body)))
         except Exception:
             note("LOAD FAILED:\n" + traceback.format_exc())
@@ -413,11 +461,11 @@ def main():
                     r["window"] = win
                 results[name] = r
                 latest = sorted(vals)[-1] if vals else ""
-                cov.append([name, "ok" if win else "incomplete", len(vals), latest, r["unit"], r["sector"],
+                cov.append([name, "complete" if win else "gaps", len(vals), latest, r["unit"], r["sector"],
                             r["category"], why])
-                if i < 3 or not win:
+                if i < 3:
                     shot(page, "03_%s.png" % re.sub(r"\W+", "_", name))
-                note("%s: %s%s" % (name, "ok" if win else "incomplete", "" if win else " (%s)" % why))
+                note("%s: %s%s" % (name, "complete" if win else "gaps", "" if win else " (%s)" % why))
                 failures_in_a_row = 0
             except Exception as e:
                 failures_in_a_row += 1
@@ -455,7 +503,7 @@ def main():
         os.makedirs(os.path.dirname(target) or ".", exist_ok=True)
         with open(target, "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, indent=1)
-        note("wrote %s: %d series, %d incomplete" % (target, len(out["series"]), len(out["incomplete"])))
+        note("wrote %s: %d usable series, %d unusable" % (target, len(out["series"]), len(out["unusable"])))
     save("log.txt", "\n".join(LOG))
 
 
