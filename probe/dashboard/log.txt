@@ -1,26 +1,40 @@
 mode: diagnostic
 LOAD FAILED:
 Traceback (most recent call last):
-  File "/home/runner/work/wb-commodities/wb-commodities/scripts/probe_dashboard.py", line 291, in main
+  File "/home/runner/work/wb-commodities/wb-commodities/scripts/probe_dashboard.py", line 354, in main
     load(page)
     ~~~~^^^^^^
-  File "/home/runner/work/wb-commodities/wb-commodities/scripts/probe_dashboard.py", line 205, in load
-    page.get_by_text("Year/Month", exact=False).first.wait_for(timeout=120000)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.14/site-packages/playwright/sync_api/_generated.py", line 13663, in wait_for
+  File "/home/runner/work/wb-commodities/wb-commodities/scripts/probe_dashboard.py", line 234, in load
+    page.wait_for_function("() => document.body && document.body.innerText.includes('All MS Category')",
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                           timeout=120000)
+                           ^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.14/site-packages/playwright/sync_api/_generated.py", line 21268, in wait_for_function
     self._sync(
     ~~~~~~~~~~^
-        self._impl_obj.wait_for(state=state, timeout=to_milliseconds(timeout))
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._impl_obj.wait_for_function(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        )
+        ^
     )
     ^
   File "/home/runner/.local/lib/python3.14/site-packages/playwright/_impl/_sync_base.py", line 124, in _sync
     return task.result()
            ~~~~~~~~~~~^^
-  File "/home/runner/.local/lib/python3.14/site-packages/playwright/_impl/locator.py", line 943, in wait_for
-    await self._frame._channel.waitForSelector(
-    ...<5 lines>...
+  File "/home/runner/.local/lib/python3.14/site-packages/playwright/_impl/page.py", line 1609, in wait_for_function
+    return await self._main_frame.wait_for_function(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        expression=expression, arg=arg, timeout=timeout, polling=polling
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
+    ^
+  File "/home/runner/.local/lib/python3.14/site-packages/playwright/_impl/frame.py", line 1209, in wait_for_function
+    result = await self._channel.waitForFunction(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
   File "/home/runner/.local/lib/python3.14/site-packages/playwright/_impl/channel_owner.py", line 398, in _mapped
     return mapper(await awaitable)
                   ^^^^^^^^^^^^^^^
@@ -32,7 +46,4 @@ Traceback (most recent call last):
   File "/home/runner/.local/lib/python3.14/site-packages/playwright/_impl/utils/zones.py", line 58, in run_async
     return await func()
            ^^^^^^^^^^^^
-playwright._impl._errors.TimeoutError: Locator.wait_for: Timeout 120000ms exceeded.
-Call log:
-  - waiting for get_by_text("Year/Month").first to be visible
-
+playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 120000ms exceeded.
