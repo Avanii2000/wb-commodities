@@ -1,0 +1,30 @@
+name: EU dashboard prices (browser)
+on:
+  schedule:
+    - cron: "0 6 * * 4"      # weekly, Thursday 06:00 UTC (change as you like)
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Read the dashboard
+        run: python scripts/probe_dashboard.py
+      - name: Show log
+        if: always()
+        run: cat probe/dashboard/log.txt >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Commit results
+        if: always()
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          git add probe
+          if [ -f price_raw_eu.json ]; then git add price_raw_eu.json; fi
+          git diff --staged --quiet || (git commit -m "EU dashboard prices" && git push)
