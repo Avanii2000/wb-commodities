@@ -191,6 +191,58 @@ JS_SCROLL_STEP = """
 """
 
 
+JS_HAS_DASH = """
+() => ((document.body ? document.body.innerText : '').replace(/\\s+/g, ' ')).includes('All MS Category')
+"""
+JS_FRAME_TEXT = """
+() => (document.body ? document.body.innerText : '').replace(/\\s+/g, ' ')
+"""
+
+
+class Ctx:
+    """Wraps a Playwright page: text, locators and JS run inside the frame that holds the dashboard;
+    mouse, keyboard, screenshots and waiting stay on the page."""
+
+    def __init__(self, page):
+        self.page = page
+        self.frame = page.main_frame
+
+    def __getattr__(self, name):
+        return getattr(self.page, name)
+
+    def get_by_text(self, *a, **k):
+        return self.frame.get_by_text(*a, **k)
+
+    def inner_text(self, selector):
+        return self.frame.inner_text(selector)
+
+    def evaluate(self, js, arg=None):
+        return self.frame.evaluate(js) if arg is None else self.frame.evaluate(js, arg)
+
+    def find_dashboard_frame(self, seconds=90):
+        for _ in range(max(1, seconds // 2)):
+            for fr in self.page.frames:
+                try:
+                    if fr.evaluate(JS_HAS_DASH):
+                        self.frame = fr
+                        return True
+                except Exception:
+                    pass
+            self.page.wait_for_timeout(2000)
+        return False
+
+    def describe_frames(self):
+        lines = []
+        for i, fr in enumerate(self.page.frames):
+            try:
+                txt = fr.evaluate(JS_FRAME_TEXT)
+            except Exception as e:
+                txt = "<cannot read: %s>" % e
+            lines.append("frame %d url=%s name=%r text_len=%d has_All_MS_Category=%s sample=%r"
+                         % (i, fr.url, fr.name, len(txt), "All MS Category" in txt, txt[:160]))
+        return lines
+
+
 def note(msg):
     print(msg, flush=True)
     LOG.append(msg)
@@ -231,14 +283,23 @@ def find_visible(page, text):
 
 def load(page):
     page.goto(URL, wait_until="domcontentloaded", timeout=120000)
-    page.wait_for_function("() => document.body && document.body.innerText.includes('All MS Category')",
-                           timeout=120000)
+    found = page.find_dashboard_frame(90)
+    save("frames.txt", "\n".join(page.describe_frames()) + "\n")
+    if not found:
+        try:
+            save("outer_page.html", page.page.content()[:150000])
+        except Exception:
+            pass
+        raise RuntimeError("dashboard text not found in any frame (see frames.txt)")
     page.wait_for_timeout(5000)
     try:
-        el = find_visible(page, "Accept only essential cookies")
-        if el:
-            el.click(timeout=5000)
-            page.wait_for_timeout(1000)
+        for fr in page.page.frames:
+            btn = fr.get_by_text("Accept only essential cookies", exact=True)
+            for i in range(btn.count()):
+                if btn.nth(i).is_visible():
+                    btn.nth(i).click(timeout=5000)
+                    page.wait_for_timeout(1000)
+                    return
     except Exception:
         pass
 
@@ -248,12 +309,13 @@ def read_all_options(page):
     el = find_visible(page, label) if label else None
     if el is None:
         raise RuntimeError("dropdown label %r not found on screen" % label)
-    box = el.bounding_box()
+    box = el.bounding_box()  # page coordinates (for the mouse)
+    fbox = el.evaluate("e => { const r = e.getBoundingClientRect(); return {x: r.x, y: r.y, width: r.width, height: r.height}; }")
     el.click(timeout=20000)
     page.wait_for_timeout(1500)
     shot(page, "02_dropdown_open.png")
-    left, right, top = box["x"] - 40, box["x"] + 300, box["y"] + box["height"]
-    page.mouse.move(box["x"] + 60, top + 150)
+    left, right, top = fbox["x"] - 40, fbox["x"] + 300, fbox["y"] + fbox["height"]  # frame coordinates (text cells)
+    page.mouse.move(box["x"] + 60, box["y"] + box["height"] + 150)
     seen, order, quiet = set(), [], 0
     for _ in range(1200):
         new = 0
@@ -349,7 +411,7 @@ def main():
     results, cov = {}, []
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 2300, "height": 1400})
+        page = Ctx(browser.new_page(viewport={"width": 2300, "height": 1400}))
         try:
             load(page)
             shot(page, "01_loaded.png")
