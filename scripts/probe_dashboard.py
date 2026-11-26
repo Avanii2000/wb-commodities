@@ -121,8 +121,28 @@ def window13(vals):
         return None, "months not consecutive (%s ... %s)" % (pers[0], pers[-1])
     missing = [p for p in pers if vals[p] is None]
     if missing:
-        return None, "no EU
-     
+        return None, "no EU value for " + ", ".join(missing[:4])
+    return ([p.replace("/", "M") for p in pers], [vals[p] for p in pers]), ""
+
+
+def month_label(m):
+    return "%s %s" % (MON[int(m[5:]) - 1], m[:4])
+
+
+def build_output(results, released):
+    series, incomplete, latest = {}, {}, ""
+    for name, r in results.items():
+        if r.get("window"):
+            months, values = r["window"]
+            series[name.lower()] = {"name": name, "unit": r.get("unit", ""), "sector": r.get("sector", ""),
+                                    "category": r.get("category", ""), "months": months, "v": values}
+            latest = max(latest, months[-1])
+        elif r.get("values"):
+            last = sorted(r["values"], reverse=True)[:24]
+            incomplete[name] = {"reason": r.get("note", ""), "unit": r.get("unit", ""),
+                                "values": {p: r["values"][p] for p in last}}
+    return {"source": "EU Agri-food data portal, Monthly market prices (EU column)", "released": released,
+            "asOf": month_label(latest) if latest else "", "series": series, "incomplete": incomplete}     
 
 # ======================================================================== PART 2: browser helpers
 JS_CELLS = """
@@ -263,8 +283,47 @@ def read_all_options(page):
                 break
             page.wait_for_timeout(200)
     save("options.txt", "\n".join(order) + "\n")
-    note("dropdown
- 
+    note("dropdown options collected: %d (probe/dashboard/options.txt)" % len(order))
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(800)
+    return order
+
+
+def select_product(page, name):
+    cur = current_product(page)
+    if cur and cur.lower() == name.lower():
+        return True
+    el = find_visible(page, cur) if cur else None
+    if el is None:
+        raise RuntimeError("dropdown label %r not found on screen" % cur)
+    el.click(timeout=20000)
+    page.wait_for_timeout(700)
+    page.keyboard.type(name, delay=30)
+    page.wait_for_timeout(900)
+    try:
+        opt = find_visible(page, name)
+        if opt is None:
+            raise RuntimeError("option not visible")
+        opt.click(timeout=3000)
+    except Exception:
+        page.keyboard.press("Enter")
+    for _ in range(40):
+        cur = current_product(page)
+        if cur and cur.lower() == name.lower():
+            return True
+        page.wait_for_timeout(500)
+    return False
+
+
+def read_table_stable(page):
+    last, err = None, "table not found"
+    for _ in range(5):
+        page.wait_for_timeout(800)
+        vals, err = parse_table(page.evaluate(JS_CELLS))
+        if vals is not None and last is not None and vals == last:
+            return vals, ""
+        last = vals
+    return last, ("" if last else err) 
 
 # ======================================================================== PART 3: main program
 
