@@ -2,8 +2,8 @@
 
 - OpenAPI spec: HTTP 500
   - response: {"code":"303001","type":"Status report","message":"Runtime Error","description":"Currently , Address endpoint : [ Name : AgrifoodPublicData--vprod_APIproductionEndpoint ] [ State : SUSPENDED ]"}
-- F&V products: HTTP 200
-  - 45 values, e.g. ['Apples', 'Apples for processing', 'Apricots', 'Asparagus', 'Avocados']
+- F&V products: HTTP 500
+  - response: {"code":"303001","type":"Status report","message":"Runtime Error","description":"Currently , Address endpoint : [ Name : AgrifoodPublicData--vprod_APIproductionEndpoint ] [ State : SUSPENDED ]"}
 - F&V stages: HTTP 500
   - response: {"code":"303001","type":"Status report","message":"Runtime Error","description":"Currently , Address endpoint : [ Name : AgrifoodPublicData--vprod_APIproductionEndpoint ] [ State : SUSPENDED ]"}
 - F&V varieties: HTTP 200
