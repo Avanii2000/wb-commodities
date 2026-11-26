@@ -1,85 +1,85 @@
 product,status,periods_seen,latest,unit,sector,category,note
-Cows,ok,52,2026/10,€/100 kg carcass weight,BOV,Beef,
-Apples Boskoop,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/09 ... 2026/10)
-Apples Braeburn,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Cox,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2023/12 ... 2026/10)
-Apples Elstar,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Fuji,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Gala,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Golden,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Granny,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Idared,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Jonagold,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Red,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apples Shampion,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Apricots,incomplete,52,2026/09,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/05 ... 2026/09)
-Asparagus,incomplete,52,2024/05,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2021/05 ... 2024/05)
-Avocados,incomplete,52,2026/04,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/01 ... 2026/04)
-Beans,ok,52,2017/07,€/100 kg net weight,FRL,Fruit and vegetables,
-Bread Rye,ok,52,2026/10,€/t,CER,Cereals,
-Bread Wheat,ok,52,2026/10,€/t,CER,Cereals,
-Butter,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Butter Oil,incomplete,52,2017/07,€/100 kg,LAI,Dairy,"no EU value for 2016/07, 2016/08, 2016/09, 2016/10"
-Cabbages,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Carrots,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Cauliflowers,ok,52,2025/01,€/100 kg net weight,FRL,Fruit and vegetables,
-Cheddar,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Cherries,incomplete,52,2026/08,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/06 ... 2026/08)
-Chicken,ok,52,2026/10,€/100 kg carcass weight,OEV,Eggs and poultry,
-Clementines,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/10 ... 2026/10)
-Courgettes,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Cucumbers,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Durum Wheat,incomplete,52,2026/10,€/t,CER,Cereals,"no EU value for 2026/09, 2026/10"
-Edam,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Eggplants,incomplete,52,2024/11,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2023/06 ... 2024/11)
-Eggs,ok,52,2026/10,€/100 kg shell,OEV,Eggs and poultry,
-Emmental,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Extra Virgin Olive Oil,ok,52,2026/10,€/100 kg,HUI,Olive Oil,
-Feed Barley,ok,52,2026/10,€/t,CER,Cereals,
-Feed Maize,ok,52,2026/10,€/t,CER,Cereals,
-Feed Oats,ok,52,2026/10,€/t,CER,Cereals,
-Feed Rye,ok,52,2026/10,€/t,CER,Cereals,
-Feed Wheat,ok,52,2026/10,€/t,CER,Cereals,
-Garlic,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Gouda,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Grapes,incomplete,52,2023/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2020/09 ... 2023/10)
-Heifers,ok,52,2026/10,€/100 kg carcass weight,BOV,Beef,
-Kiwis,incomplete,52,2026/09,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/06 ... 2026/09)
-Lamb Heavy,incomplete,52,2026/10,€/100 kg carcass weight,OVI,Sheep & goat meat,"no EU value for 2026/04, 2026/05"
-Lamb Light,incomplete,52,2026/10,€/100 kg carcass weight,OVI,Sheep & goat meat,"no EU value for 2025/11, 2025/12, 2026/04, 2026/05"
-Lampante Olive Oil,ok,52,2026/10,€/100 Kg,HUI,Olive Oil,
-Leeks,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Lemons,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Lettuces,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Male Bovines,ok,52,2026/10,€/100 kg carcass weight,BOV,Beef,
-Malting Barley,ok,52,2026/10,€/t,CER,Cereals,
-Mandarins,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/06 ... 2026/10)
-Melons,incomplete,52,2024/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2021/06 ... 2024/10)
-Milling Oats,ok,52,2026/10,€/t,CER,Cereals,
-Mushrooms,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Nectarines,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/05 ... 2026/10)
-Onions,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Oranges,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/02 ... 2026/10)
-Peaches,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/06 ... 2026/10)
-Pears,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Peppers,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Piglets,ok,52,2026/10,€/100 kg carcass weight,POR,Pigmeat,
-Pigmeat Class E,ok,52,2026/10,€/100 kg carcass weight,POR,Pigmeat,
-Pigmeat Class R,ok,52,2026/10,€/100 kg carcass weight,POR,Pigmeat,
-Pigmeat Class S,ok,52,2026/10,€/100 kg carcass weight,POR,Pigmeat,
-Plums,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/09 ... 2026/10)
-Raw Milk,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Satsumas,incomplete,52,2025/12,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2023/09 ... 2025/12)
-SMP,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Steers,ok,52,2026/10,€/100 kg carcass weight,BOV,Beef,
-Strawberries,incomplete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,no EU value for 2026/01
-Tomatoes - Cherry/Special,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Tomatoes Round,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Tomatoes Trusses,ok,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
-Virgin Olive Oil,ok,52,2026/10,€/100 Kg,HUI,Olive Oil,
-Watermelons,incomplete,52,2024/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2021/10 ... 2024/10)
-Whey Powder,ok,52,2026/10,€/100 kg,LAI,Dairy,
-White Sugar,ok,52,2026/08,€/t,SUC,Sugar,
-WMP,ok,52,2026/10,€/100 kg,LAI,Dairy,
-Young Bovines,ok,52,2026/10,€/100 kg carcass weight,BOV,Beef,
-Young Bulls,ok,52,2026/10,€/100 kg carcass weight,BOV,Beef,
+Cows,gaps,75,2026/10,€/100 kg carcass weight,BOV,Beef,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Boskoop,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/09 ... 2026/10)
+Apples Braeburn,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Cox,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2023/12 ... 2026/10)
+Apples Elstar,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Fuji,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Gala,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Golden,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Granny,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Idared,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Jonagold,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Red,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apples Shampion,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Apricots,gaps,75,2026/09,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/05 ... 2026/09)
+Asparagus,gaps,75,2024/05,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2021/05 ... 2024/05)
+Avocados,gaps,75,2026/04,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/01 ... 2026/04)
+Beans,gaps,75,2017/07,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2016/07, 2016/08, 2016/09, 2016/10"
+Bread Rye,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Bread Wheat,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Butter,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Butter Oil,gaps,75,2017/07,€/100 kg,LAI,Dairy,"no EU value for 2016/07, 2016/08, 2016/09, 2016/10"
+Cabbages,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Carrots,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Cauliflowers,gaps,75,2025/01,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2024/01, 2024/02, 2024/03, 2024/04"
+Cheddar,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Cherries,gaps,75,2026/08,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/06 ... 2026/08)
+Chicken,gaps,75,2026/10,€/100 kg carcass weight,OEV,Eggs and poultry,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Clementines,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/10 ... 2026/10)
+Courgettes,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Cucumbers,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Durum Wheat,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Edam,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Eggplants,gaps,75,2024/11,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2023/06 ... 2024/11)
+Eggs,gaps,75,2026/10,€/100 kg shell,OEV,Eggs and poultry,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Emmental,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Extra Virgin Olive Oil,gaps,75,2026/10,€/100 kg,HUI,Olive Oil,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Feed Barley,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Feed Maize,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Feed Oats,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Feed Rye,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Feed Wheat,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Garlic,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Gouda,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Grapes,gaps,75,2023/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2020/09 ... 2023/10)
+Heifers,gaps,75,2026/10,€/100 kg carcass weight,BOV,Beef,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Kiwis,gaps,75,2026/09,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/06 ... 2026/09)
+Lamb Heavy,gaps,75,2026/10,€/100 kg carcass weight,OVI,Sheep & goat meat,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Lamb Light,gaps,75,2026/10,€/100 kg carcass weight,OVI,Sheep & goat meat,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Lampante Olive Oil,gaps,75,2026/10,€/100 Kg,HUI,Olive Oil,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Leeks,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Lemons,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Lettuces,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Male Bovines,gaps,75,2026/10,€/100 kg carcass weight,BOV,Beef,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Malting Barley,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Mandarins,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/06 ... 2026/10)
+Melons,gaps,75,2024/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2021/06 ... 2024/10)
+Milling Oats,gaps,75,2026/10,€/t,CER,Cereals,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Mushrooms,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Nectarines,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/05 ... 2026/10)
+Onions,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Oranges,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/02 ... 2026/10)
+Peaches,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2025/06 ... 2026/10)
+Pears,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Peppers,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Piglets,gaps,75,2026/10,€/100 kg carcass weight,POR,Pigmeat,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Pigmeat Class E,gaps,75,2026/10,€/100 kg carcass weight,POR,Pigmeat,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Pigmeat Class R,gaps,75,2026/10,€/100 kg carcass weight,POR,Pigmeat,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Pigmeat Class S,gaps,75,2026/10,€/100 kg carcass weight,POR,Pigmeat,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Plums,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2024/09 ... 2026/10)
+Raw Milk,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Satsumas,gaps,75,2025/12,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2023/09 ... 2025/12)
+SMP,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Steers,gaps,75,2026/10,€/100 kg carcass weight,BOV,Beef,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Strawberries,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Tomatoes - Cherry/Special,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Tomatoes Round,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Tomatoes Trusses,gaps,75,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Virgin Olive Oil,gaps,75,2026/10,€/100 Kg,HUI,Olive Oil,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Watermelons,gaps,75,2024/10,€/100 kg net weight,FRL,Fruit and vegetables,months not consecutive (2021/10 ... 2024/10)
+Whey Powder,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+White Sugar,gaps,75,2026/08,€/t,SUC,Sugar,"no EU value for 2025/08, 2025/09, 2025/10, 2025/11"
+WMP,gaps,75,2026/10,€/100 kg,LAI,Dairy,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Young Bovines,gaps,75,2026/10,€/100 kg carcass weight,BOV,Beef,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"
+Young Bulls,gaps,75,2026/10,€/100 kg carcass weight,BOV,Beef,"no EU value for 2025/10, 2025/11, 2025/12, 2026/01"

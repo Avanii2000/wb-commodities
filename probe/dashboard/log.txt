@@ -2,88 +2,88 @@ mode: all
 loaded; last update on page: 26 Nov 2026; title: {'category': 'Beef', 'sector': 'BOV', 'product': 'Cows', 'unit': '€/100 kg carcass weight'}
 options read from the <select> element: 84
 dropdown options collected: 84 (probe/dashboard/options.txt)
-Cows: ok
-Apples Boskoop: incomplete (months not consecutive (2025/09 ... 2026/10))
-Apples Braeburn: ok
-Apples Cox: incomplete (months not consecutive (2023/12 ... 2026/10))
-Apples Elstar: ok
-Apples Fuji: ok
-Apples Gala: ok
-Apples Golden: ok
-Apples Granny: ok
-Apples Idared: ok
-Apples Jonagold: ok
-Apples Red: ok
-Apples Shampion: ok
-Apricots: incomplete (months not consecutive (2025/05 ... 2026/09))
-Asparagus: incomplete (months not consecutive (2021/05 ... 2024/05))
-Avocados: incomplete (months not consecutive (2025/01 ... 2026/04))
-Beans: ok
-Bread Rye: ok
-Bread Wheat: ok
-Butter: ok
-Butter Oil: incomplete (no EU value for 2016/07, 2016/08, 2016/09, 2016/10)
-Cabbages: ok
-Carrots: ok
-Cauliflowers: ok
-Cheddar: ok
-Cherries: incomplete (months not consecutive (2024/06 ... 2026/08))
-Chicken: ok
-Clementines: incomplete (months not consecutive (2024/10 ... 2026/10))
-Courgettes: ok
-Cucumbers: ok
-Durum Wheat: incomplete (no EU value for 2026/09, 2026/10)
-Edam: ok
-Eggplants: incomplete (months not consecutive (2023/06 ... 2024/11))
-Eggs: ok
-Emmental: ok
-Extra Virgin Olive Oil: ok
-Feed Barley: ok
-Feed Maize: ok
-Feed Oats: ok
-Feed Rye: ok
-Feed Wheat: ok
-Garlic: ok
-Gouda: ok
-Grapes: incomplete (months not consecutive (2020/09 ... 2023/10))
-Heifers: ok
-Kiwis: incomplete (months not consecutive (2025/06 ... 2026/09))
-Lamb Heavy: incomplete (no EU value for 2026/04, 2026/05)
-Lamb Light: incomplete (no EU value for 2025/11, 2025/12, 2026/04, 2026/05)
-Lampante Olive Oil: ok
-Leeks: ok
-Lemons: ok
-Lettuces: ok
-Male Bovines: ok
-Malting Barley: ok
-Mandarins: incomplete (months not consecutive (2025/06 ... 2026/10))
-Melons: incomplete (months not consecutive (2021/06 ... 2024/10))
-Milling Oats: ok
-Mushrooms: ok
-Nectarines: incomplete (months not consecutive (2025/05 ... 2026/10))
-Onions: ok
-Oranges: incomplete (months not consecutive (2024/02 ... 2026/10))
-Peaches: incomplete (months not consecutive (2025/06 ... 2026/10))
-Pears: ok
-Peppers: ok
-Piglets: ok
-Pigmeat Class E: ok
-Pigmeat Class R: ok
-Pigmeat Class S: ok
-Plums: incomplete (months not consecutive (2024/09 ... 2026/10))
-Raw Milk: ok
-Satsumas: incomplete (months not consecutive (2023/09 ... 2025/12))
-SMP: ok
-Steers: ok
-Strawberries: incomplete (no EU value for 2026/01)
-Tomatoes - Cherry/Special: ok
-Tomatoes Round: ok
-Tomatoes Trusses: ok
-Virgin Olive Oil: ok
-Watermelons: incomplete (months not consecutive (2021/10 ... 2024/10))
-Whey Powder: ok
-White Sugar: ok
-WMP: ok
-Young Bovines: ok
-Young Bulls: ok
-wrote price_raw_eu.json: 61 series, 23 incomplete
+Cows: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Boskoop: gaps (months not consecutive (2025/09 ... 2026/10))
+Apples Braeburn: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Cox: gaps (months not consecutive (2023/12 ... 2026/10))
+Apples Elstar: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Fuji: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Gala: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Golden: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Granny: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Idared: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Jonagold: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Red: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apples Shampion: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Apricots: gaps (months not consecutive (2025/05 ... 2026/09))
+Asparagus: gaps (months not consecutive (2021/05 ... 2024/05))
+Avocados: gaps (months not consecutive (2025/01 ... 2026/04))
+Beans: gaps (no EU value for 2016/07, 2016/08, 2016/09, 2016/10)
+Bread Rye: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Bread Wheat: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Butter: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Butter Oil: gaps (no EU value for 2016/07, 2016/08, 2016/09, 2016/10)
+Cabbages: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Carrots: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Cauliflowers: gaps (no EU value for 2024/01, 2024/02, 2024/03, 2024/04)
+Cheddar: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Cherries: gaps (months not consecutive (2024/06 ... 2026/08))
+Chicken: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Clementines: gaps (months not consecutive (2024/10 ... 2026/10))
+Courgettes: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Cucumbers: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Durum Wheat: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Edam: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Eggplants: gaps (months not consecutive (2023/06 ... 2024/11))
+Eggs: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Emmental: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Extra Virgin Olive Oil: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Feed Barley: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Feed Maize: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Feed Oats: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Feed Rye: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Feed Wheat: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Garlic: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Gouda: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Grapes: gaps (months not consecutive (2020/09 ... 2023/10))
+Heifers: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Kiwis: gaps (months not consecutive (2025/06 ... 2026/09))
+Lamb Heavy: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Lamb Light: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Lampante Olive Oil: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Leeks: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Lemons: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Lettuces: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Male Bovines: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Malting Barley: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Mandarins: gaps (months not consecutive (2025/06 ... 2026/10))
+Melons: gaps (months not consecutive (2021/06 ... 2024/10))
+Milling Oats: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Mushrooms: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Nectarines: gaps (months not consecutive (2025/05 ... 2026/10))
+Onions: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Oranges: gaps (months not consecutive (2024/02 ... 2026/10))
+Peaches: gaps (months not consecutive (2025/06 ... 2026/10))
+Pears: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Peppers: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Piglets: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Pigmeat Class E: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Pigmeat Class R: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Pigmeat Class S: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Plums: gaps (months not consecutive (2024/09 ... 2026/10))
+Raw Milk: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Satsumas: gaps (months not consecutive (2023/09 ... 2025/12))
+SMP: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Steers: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Strawberries: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Tomatoes - Cherry/Special: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Tomatoes Round: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Tomatoes Trusses: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Virgin Olive Oil: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Watermelons: gaps (months not consecutive (2021/10 ... 2024/10))
+Whey Powder: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+White Sugar: gaps (no EU value for 2025/08, 2025/09, 2025/10, 2025/11)
+WMP: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Young Bovines: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+Young Bulls: gaps (no EU value for 2025/10, 2025/11, 2025/12, 2026/01)
+only 0 series read vs 61 before - NOT overwriting price_raw_eu.json
