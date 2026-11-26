@@ -1,0 +1,24 @@
+# EU agri-food API probe
+
+- OpenAPI spec: HTTP 500
+  - response: {"code":"303001","type":"Status report","message":"Runtime Error","description":"Currently , Address endpoint : [ Name : AgrifoodPublicData--vprod_APIproductionEndpoint ] [ State : SUSPENDED ]"}
+- F&V products: HTTP 200
+  - 45 values, e.g. ['Apples', 'Apples for processing', 'Apricots', 'Asparagus', 'Avocados']
+- F&V stages: HTTP 500
+  - response: {"code":"303001","type":"Status report","message":"Runtime Error","description":"Currently , Address endpoint : [ Name : AgrifoodPublicData--vprod_APIproductionEndpoint ] [ State : SUSPENDED ]"}
+- F&V varieties: HTTP 200
+  - 163 values, e.g. ['Apples - All types and varieties', 'Apples - Boskoop', 'Apples - Braeburn', 'Apples - Cox orange', 'Apples - Elstar']
+- Fuji varieties found: ['Apples - Fuji', 'Organic-Apples - Fuji']
+- sample query `/api/fruitAndVegetable/pricesSupplyChain?varieties=Apples%20-%20Fuji&years=2026`: HTTP 200
+  - 368 rows (first 368 saved)
+  - distinct memberStateCode (7): ['DE', 'EL', 'ES', 'FR', 'HR', 'IT', 'PT']
+  - distinct productStage (4): ['Ex-packaging station price', 'Farmgate price', 'Retail buying price', 'Retail selling price']
+  - distinct periodType (2): ['Month', 'Week']
+  - distinct market (7): ['National average (DE)', 'National average (EL)', 'National average (ES)', 'National average (FR)', 'National average (HR)', 'National average (IT)', 'National average (PT)']
+  - distinct unit (1): ['€/100Kg']
+  - first 5 rows:
+    - `{"memberStateCode": "HR", "memberStateName": "Croatia", "beginDate": "16/11/2026", "endDate": "22/11/2026", "price": "€147.58", "unit": "€/100Kg", "periodType": "Week", "period": 47, "year": 2026, "variety": "Apples - Fuji", "productStage": "Ex-packaging station price", "market": "National average (HR)", "isCalculated": "Y", "isRegulated": "Y"}`
+    - `{"memberStateCode": "FR", "memberStateName": "France", "beginDate": "16/11/2026", "endDate": "22/11/2026", "price": "€159.00", "unit": "€/100Kg", "periodType": "Week", "period": 47, "year": 2026, "variety": "Apples - Fuji", "productStage": "Ex-packaging station price", "market": "National average (FR)", "isCalculated": "N", "isRegulated": "Y"}`
+    - `{"memberStateCode": "IT", "memberStateName": "Italy", "beginDate": "16/11/2026", "endDate": "22/11/2026", "price": "€111.67", "unit": "€/100Kg", "periodType": "Week", "period": 47, "year": 2026, "variety": "Apples - Fuji", "productStage": "Ex-packaging station price", "market": "National average (IT)", "isCalculated": "N", "isRegulated": "Y"}`
+    - `{"memberStateCode": "IT", "memberStateName": "Italy", "beginDate": "16/11/2026", "endDate": "22/11/2026", "price": "€82.34", "unit": "€/100Kg", "periodType": "Week", "period": 47, "year": 2026, "variety": "Apples - Fuji", "productStage": "Farmgate price", "market": "National average (IT)", "isCalculated": "N", "isRegulated": "Y"}`
+    - `{"memberStateCode": "PT", "memberStateName": "Portugal", "beginDate": "16/11/2026", "endDate": "22/11/2026", "price": "€120.00", "unit": "€/100Kg", "periodType": "Week", "period": 47, "year": 2026, "variety": "Apples - Fuji", "productStage": "Ex-packaging station price", "market": "National average (PT)", "isCalculated": "N", "isRegulated": "Y"}`
