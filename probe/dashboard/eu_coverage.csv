@@ -19,7 +19,7 @@ Beans,complete,52,2017/07,€/100 kg net weight,FRL,Fruit and vegetables,
 Bread Rye,complete,52,2026/10,€/t,CER,Cereals,
 Bread Wheat,complete,52,2026/10,€/t,CER,Cereals,
 Butter,complete,52,2026/10,€/100 kg,LAI,Dairy,
-Butter Oil,failed,0,,,,,the table has no EU values - wrong page frame or the layout changed
+Butter Oil,gaps,52,2017/07,€/100 kg,LAI,Dairy,"no EU value for 2016/07, 2016/08, 2016/09, 2016/10"
 Cabbages,complete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
 Carrots,complete,52,2026/10,€/100 kg net weight,FRL,Fruit and vegetables,
 Cauliflowers,complete,52,2025/01,€/100 kg net weight,FRL,Fruit and vegetables,
