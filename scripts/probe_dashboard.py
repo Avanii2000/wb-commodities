@@ -198,7 +198,10 @@ JS_DROPDOWN_HTML = """
 
 
 JS_HAS_DASH = """
-() => ((document.body ? document.body.innerText : '').replace(/\\s+/g, ' ')).includes('All MS Category')
+() => {
+  const t = (document.body ? document.body.innerText : '').replace(/\\s+/g, ' ');
+  return t.includes('All MS Category') && t.includes('Market Prices sheet') && t.includes('Pivot table');
+}
 """
 JS_FRAME_TEXT = """
 () => (document.body ? document.body.innerText : '').replace(/\\s+/g, ' ')
@@ -452,6 +455,8 @@ def main():
                 vals, err = read_table_stable(page)
                 if vals is None:
                     raise RuntimeError(err)
+                if not any(x is not None for x in vals.values()):
+                    raise RuntimeError("the table has no EU values - wrong page frame or the layout changed")
                 if i < 2:  # raw cells of the first products, to debug the table reader offline
                     save("cells_%s.json" % re.sub(r"\W+", "_", name), json.dumps(page.evaluate(JS_CELLS)))
                 win, why = window13(vals)
