@@ -1,0 +1,84 @@
+Cows
+Apples Boskoop
+Apples Braeburn
+Apples Cox
+Apples Elstar
+Apples Fuji
+Apples Gala
+Apples Golden
+Apples Granny
+Apples Idared
+Apples Jonagold
+Apples Red
+Apples Shampion
+Apricots
+Asparagus
+Avocados
+Beans
+Bread Rye
+Bread Wheat
+Butter
+Butter Oil
+Cabbages
+Carrots
+Cauliflowers
+Cheddar
+Cherries
+Chicken
+Clementines
+Courgettes
+Cucumbers
+Durum Wheat
+Edam
+Eggplants
+Eggs
+Emmental
+Extra Virgin Olive Oil
+Feed Barley
+Feed Maize
+Feed Oats
+Feed Rye
+Feed Wheat
+Garlic
+Gouda
+Grapes
+Heifers
+Kiwis
+Lamb Heavy
+Lamb Light
+Lampante Olive Oil
+Leeks
+Lemons
+Lettuces
+Male Bovines
+Malting Barley
+Mandarins
+Melons
+Milling Oats
+Mushrooms
+Nectarines
+Onions
+Oranges
+Peaches
+Pears
+Peppers
+Piglets
+Pigmeat Class E
+Pigmeat Class R
+Pigmeat Class S
+Plums
+Raw Milk
+Satsumas
+SMP
+Steers
+Strawberries
+Tomatoes - Cherry/Special
+Tomatoes Round
+Tomatoes Trusses
+Virgin Olive Oil
+Watermelons
+Whey Powder
+White Sugar
+WMP
+Young Bovines
+Young Bulls
