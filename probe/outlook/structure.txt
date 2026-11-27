@@ -1,3 +1,41 @@
 dimensions: REF_AREA.FREQ.COMMODITY.MEASURE.UNIT_MEASURE.VERSION_ID
-areas in the download (1):
+
+measures in this edition (29):
+  AH: Area harvested
+  BF: Biofuel use
+  BLNC: Balance
+  CI: Cow inventory
+  CR: Crush
+  ECOE_TOT: Direct GHG emission
+  EX: Exports
+  FE: Feed
+  FO: Food
+  FOA: Food availability
+  FO_DES_TOT: Total calorie availability
+  FO_DFS_FAT: Food fat availability
+  FO_DFS_PROT: Food protein availability
+  FO_PC: Human consumption
+  IM: Imports
+  IND: Indicators
+  NT: Trade balance
+  OU: Other use
+  PP: Producer price
+  PRCS: Prices
+  QC: Consumption
+  QP: Production
+  QP_BD: Biodiesel production from commodity
+  QP_ET: Ethanol production from commodity
+  RT: Ratio
+  SPCFC: Specific
+  ST: Ending stocks
+  WP: World price
+  YLD: Yield
+
+candidate areas per region:
+  Europe: EU=European Union; EU00=European Union (evolving composition); EU00_X=European Union (evolving composition) unspecified; EU13OECD=European Union (13 countries) in OECD; EU14OECD=European Union (14 countries) in OECD; EU15=European Union (15 countries); EU19OECD=European Union (19 countries) in OECD; EU20OECD=European Union (20 countries) in OECD; EU21OECD=European Union (21 countries) in OECD; EU22OECD=European Union (22 countries) in OECD; EU22OECD_2020=European Union (22 countries) in OECD (from 01/02/2020); EU23OECD=European Union (23 countries) in OECD; EU25=European Union (25 countries); EU27=European Union (27 countries); EU27_2020=European Union (27 countries from 01/02/2020); EU28=European Union (28 countries); EU28XEU15=European Union 28 excluding European Union 15 countries; EUOECD=European Union countries in OECD; EU_X=European Union unspecified
+  US: UMI=United States Minor Outlying Islands; USA=United States; VIR=United States Virgin Islands
+  World: W=World; WB=World marine and aviation bunkers; WBA=World aviation bunkers; WBM=World marine bunkers; W_IO=World and international organisations; W_X=World unspecified
+
+areas in the download (2):
+  EU: European Union
   USA: United States

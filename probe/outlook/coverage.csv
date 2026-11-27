@@ -1,43 +1,43 @@
-commodity_code,commodity,Europe,US,World,units
-CPC_0111,Wheat,,1990-2035,,National currency per tonne
-CPC_0112,Maize (corn),,1990-2035,,National currency per tonne
-CPC_0113,Rice,,1990-2035,,National currency per tonne
-CPC_0114T0119,Other coarse grains,,1990-2035,,National currency per tonne
-CPC_0141,Soya beans,,1990-2035,,National currency per tonne
-CPC_0143,,,,,
-CPC_0144,Other oilseeds,,1990-2035,,National currency per tonne
-CPC_0151T0155,Roots and tubers,,1991-2035,,National currency per tonne
-CPC_017,Pulses (dried leguminous vegetables),,1990-2035,,National currency per tonne
-CPC_01801,Sugar beet,,1990-2035,,National currency per tonne
-CPC_01802,Sugar cane,,1990-2035,,National currency per tonne
-CPC_01921,"Cotton, whether or not ginned",,1990-2035,,National currency per tonne
-CPC_022,,,,,
-CPC_0221,Raw milk from bovine animals,,1990-2035,,National currency per tonne
-CPC_04,Fish and other fishing products,,1990-2035,,National currency per tonne
-CPC_21233,Edible fish meal,,1990-2035,,National currency per tonne
-CPC_21525,"Fats and oils and their fractions, of fish, other than liver oils",,1990-2035,,National currency per tonne
-CPC_216,Vegetable oils,,1990-2035,,National currency per tonne
-CPC_21920,"Flours and meals of oil seeds or oleaginous fruits, except those of mustard",,1990-2035,,National currency per tonne
-CPC_22211,Whole milk powder,,1990-2035,,National currency per tonne
-CPC_2222T2223,,,,,
-CPC_2224,Butter and other fats and oils derived from milk,,1990-2035,,National currency per tonne
-CPC_2225,"Cheese, fresh or processed",,1990-2035,,National currency per tonne
-CPC_2226,,,,,
-CPC_223,"Eggs, in shell, preserved or cooked",,1990-2035,,National currency per tonne
-CPC_23210,Glucose and glucose syrup; fructose and fructose syrup; lactose and lactose syrup; invert sugar; sugars and sugar syrups n.e.c.; artificial honey; caramel,,1994-2035,,National currency per tonne
-CPC_235,Sugar and molasses,,1990-2035,,National currency per tonne
-CPC_2351,Raw cane or beet sugar,,1990-2035,,National currency per tonne
-CPC_2352,Refined sugar,,1990-2035,,National currency per tonne
-CPC_2354,Molasses,,1990-2035,,National currency per tonne
-CPC_35491,Biodiesel,,2000-2035,,National currency per hectolitre
-CPC_EX_222121,Skim milk powder,,1990-2035,,National currency per tonne
-CPC_EX_222122,Whey powder,,1990-2035,,National currency per tonne
-CPC_EX_35492,Ethanol,,2000-2035,,National currency per hectolitre
-CPC_EX_AC,Fish from aquaculture,,1990-2035,,National currency per tonne
-CPC_EX_AG_COM,,,,,
-CPC_EX_BV,Beef and veal,,1990-2035,,National currency per tonne
-CPC_EX_DDG,Distiller's dry grains,,1990-2035,,National currency per tonne
-CPC_EX_FHC,,,,,
-CPC_EX_PK,Pigmeat,,1990-2035,,National currency per tonne
-CPC_EX_PT,Poultry meat,,1990-2035,,National currency per tonne
-CPC_EX_SH,Sheepmeat,,1990-2035,,National currency per tonne
+commodity_code,commodity,Europe,US,units
+CPC_0111,Wheat,1991-2035,1990-2035,National currency per tonne
+CPC_0112,Maize (corn),1991-2035,1990-2035,National currency per tonne
+CPC_0113,Rice,1990-2035,1990-2035,National currency per tonne
+CPC_0114T0119,Other coarse grains,1992-2035,1990-2035,National currency per tonne
+CPC_0141,Soya beans,1994-2035,1990-2035,National currency per tonne
+CPC_0143,,,,
+CPC_0144,Other oilseeds,1991-2035,1990-2035,National currency per tonne
+CPC_0151T0155,Roots and tubers,1990-2035,1991-2035,National currency per tonne
+CPC_017,Pulses (dried leguminous vegetables),1990-2035,1990-2035,National currency per tonne
+CPC_01801,Sugar beet,2000-2035,1990-2035,National currency per tonne
+CPC_01802,Sugar cane,,1990-2035,National currency per tonne
+CPC_01921,"Cotton, whether or not ginned",1990-2035,1990-2035,National currency per tonne
+CPC_022,,,,
+CPC_0221,Raw milk from bovine animals,2004-2035,1990-2035,National currency per tonne
+CPC_04,Fish and other fishing products,1990-2035,1990-2035,National currency per tonne
+CPC_21233,Edible fish meal,1990-2035,1990-2035,National currency per tonne
+CPC_21525,"Fats and oils and their fractions, of fish, other than liver oils",1990-2035,1990-2035,National currency per tonne
+CPC_216,Vegetable oils,1994-2035,1990-2035,National currency per tonne
+CPC_21920,"Flours and meals of oil seeds or oleaginous fruits, except those of mustard",1993-2035,1990-2035,National currency per tonne
+CPC_22211,Whole milk powder,1990-2035,1990-2035,National currency per tonne
+CPC_2222T2223,,,,
+CPC_2224,Butter and other fats and oils derived from milk,1990-2035,1990-2035,National currency per tonne
+CPC_2225,"Cheese, fresh or processed",1990-2035,1990-2035,National currency per tonne
+CPC_2226,Casein,2005-2035,,National currency per tonne
+CPC_223,"Eggs, in shell, preserved or cooked",1995-2035,1990-2035,National currency per tonne
+CPC_23210,Glucose and glucose syrup; fructose and fructose syrup; lactose and lactose syrup; invert sugar; sugars and sugar syrups n.e.c.; artificial honey; caramel,2000-2035,1994-2035,National currency per tonne
+CPC_235,Sugar and molasses,2000-2035,1990-2035,National currency per tonne
+CPC_2351,Raw cane or beet sugar,,1990-2035,National currency per tonne
+CPC_2352,Refined sugar,2000-2035,1990-2035,National currency per tonne
+CPC_2354,Molasses,1990-2035,1990-2035,National currency per tonne
+CPC_35491,Biodiesel,2000-2035,2000-2035,National currency per hectolitre
+CPC_EX_222121,Skim milk powder,1990-2035,1990-2035,National currency per tonne
+CPC_EX_222122,Whey powder,1990-2035,1990-2035,National currency per tonne
+CPC_EX_35492,Ethanol,2000-2035,2000-2035,National currency per hectolitre
+CPC_EX_AC,Fish from aquaculture,1990-2035,1990-2035,National currency per tonne
+CPC_EX_AG_COM,,,,
+CPC_EX_BV,Beef and veal,1991-2035,1990-2035,National currency per tonne
+CPC_EX_DDG,Distiller's dry grains,1991-2035,1990-2035,National currency per tonne
+CPC_EX_FHC,,,,
+CPC_EX_PK,Pigmeat,1990-2035,1990-2035,National currency per tonne
+CPC_EX_PT,Poultry meat,1992-2035,1990-2035,National currency per tonne
+CPC_EX_SH,Sheepmeat,1990-2035,1990-2035,National currency per tonne
