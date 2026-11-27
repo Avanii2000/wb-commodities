@@ -296,6 +296,68 @@ def parse_csv(text):
     return rows, header
 
 
+def parse_overrides():
+    """OUTLOOK_MEASURES='World=PW,Europe=PP' lets a region use another measure than the default."""
+    out = {}
+    for part in os.environ.get("OUTLOOK_MEASURES", "").split(","):
+        if "=" in part:
+            k, v = part.split("=", 1)
+            for rk, _ in REGIONS:
+                if rk.lower() == k.strip().lower() and v.strip():
+                    out[rk] = v.strip()
+    return out
+
+
+def collect(rows, code_region, measure_for):
+    """Series per (region, area code, commodity, unit); the area code is kept until the best code per region is chosen."""
+    series, years, dup, statuses, names = {}, set(), 0, Counter(), {}
+    for r in rows:
+        rk = code_region.get(r["area"][0])
+        if not rk or r["measure"][0] != measure_for.get(rk, MEASURE):
+            continue
+        names[r["comm"][0]] = r["comm"][1] or names.get(r["comm"][0], "")
+        k = "%s|%s|%s|%s" % (rk, r["area"][0], r["comm"][0], r["unit"][0])
+        sr = series.setdefault(k, {"region": rk, "code": r["area"][0], "commodity": r["comm"][0], "name": r["comm"][1], "unit": r["unit"][1],
+                                   "unitCode": r["unit"][0], "measure": r["measure"][0], "vals": {}})
+        if r["year"] in sr["vals"] and sr["vals"][r["year"]] != r["val"]:
+            dup += 1
+            continue
+        sr["vals"][r["year"]] = r["val"]
+        years.add(r["year"])
+        statuses[r["status"] or "(none)"] += 1
+    return series, sorted(years), dup, statuses, names
+
+
+def discover(flow, ver, dims, st, lacking, cands):
+    """For regions with no data under the chosen measure: which price-type measures exist for their areas?"""
+    pm = {c: n for c, n in st["measures"].items() if "price" in n.lower()}
+    log("price-type measures in this edition: %s" % ("; ".join("%s=%s" % kv for kv in sorted(pm.items())) or "none"))
+    areas = sorted({code for rk in lacking for code, _ in cands[rk]})
+    if not pm or not areas:
+        return
+    text, how = fetch_csv(flow, ver, build_key(dims, areas, "+".join(sorted(pm))))
+    rows, _ = parse_csv(text)
+    agg = {}
+    for r in rows:
+        a = agg.setdefault((r["area"][0], r["area"][1], r["measure"][0], r["measure"][1]), {"units": set(), "comms": {}})
+        a["units"].add(r["unit"][1] or r["unit"][0])
+        a["comms"][r["comm"][0]] = r["comm"][1]
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\n")
+    w.writerow(["area_code", "area", "measure_code", "measure", "units", "commodities", "examples"])
+    for (ac, an, mc, mn), a in sorted(agg.items()):
+        w.writerow([ac, an, mc, mn, " | ".join(sorted(a["units"])), len(a["comms"]), "; ".join(list(a["comms"].values())[:4])])
+    save("discovery.csv", buf.getvalue())
+    log("discovery download: %d rows | areas x price measures with data: %d (see discovery.csv)" % (len(rows), len(agg)))
+    for rk in lacking:
+        codes = {c for c, _ in cands[rk]}
+        hits = sorted(((k, v) for k, v in agg.items() if k[0] in codes), key=lambda kv: -len(kv[1]["comms"]))[:6]
+        for (ac, an, mc, mn), v in hits:
+            log("   %s has data in %s (%s): %s - %d commodities, %s" % (rk, mc, mn, ac, len(v["comms"]), " | ".join(sorted(v["units"]))))
+        if not hits:
+            log("   %s has no data in any price-type measure" % rk)
+
+
 def main():
     global AGENCY
     try:
@@ -354,86 +416,99 @@ def main():
         except Exception as e:
             log("WARNING: could not read the dataflow structure (%s): using the original URL's layout and picking regions by name" % str(e)[:140])
         dims = st["dims"] if st else FALLBACK_DIMS
-        code_region, chosen = {}, {}
+        overrides = parse_overrides()
+        measure_for = {rk: overrides.get(rk, MEASURE) for rk, _ in REGIONS}
+        if overrides:
+            log("measure overrides: %s" % ", ".join("%s=%s" % kv for kv in sorted(overrides.items())))
+        cands = {rk: [] for rk, _ in REGIONS}
         if st and st["areas"]:
             for rk, _ in REGIONS:
-                c = [(code, nm) for code, nm in st["areas"].items() if region_key(nm) == rk]
-                if c:
-                    best = pick_best(c)
-                    chosen[rk] = best
-                    code_region[best[0]] = rk
-                    if len(c) > 1:
-                        log("several areas look like %s: %s -> using %s" % (rk, "; ".join("%s=%s" % x for x in c), best[0]))
-        areas = [chosen[rk][0] for rk, _ in REGIONS if rk in chosen]
-        mname = (st or {}).get("measures", {}).get(MEASURE, "")
-        key = build_key(dims, areas, MEASURE)
-        log("dimensions: %s | key: %s | measure %s %s" % (".".join(dims), key if len(key) < 120 else key[:117] + "...", MEASURE, ("(" + mname + ")") if mname else ""))
-        text, how = fetch_csv(flow, ver, key)
-        if not os.path.exists(os.path.join(OUT, "raw_sample.csv")):
-            save("raw_sample.csv", "\n".join(text.split("\n")[:60]) + "\n")
-        rows, header = parse_csv(text)
-        log("downloaded with %s | rows: %d | requests made: %d" % (how, len(rows), CALLS[0]))
+                cands[rk] = sorted((code, nm) for code, nm in st["areas"].items() if region_key(nm) == rk)
+                if len(cands[rk]) > 1:
+                    log("several areas look like %s: %s" % (rk, "; ".join("%s=%s" % x for x in cands[rk])))
+        groups = {}
+        for rk, _ in REGIONS:
+            groups.setdefault(measure_for[rk], []).append(rk)
+        rows, areas_seen = [], {}
+        for meas, rks in groups.items():
+            areas = [code for rk in rks for code, _ in cands[rk]]
+            key = build_key(dims, areas, meas)
+            mname = (st or {}).get("measures", {}).get(meas, "")
+            log("dimensions: %s | key: %s | measure %s %s" % (".".join(dims), key if len(key) < 140 else key[:137] + "...", meas, ("(" + mname + ")") if mname else ""))
+            try:
+                text, how = fetch_csv(flow, ver, key)
+            except RuntimeError as e:
+                if len(groups) > 1 and rows:
+                    log("WARNING: nothing could be downloaded for measure %s (%s)" % (meas, str(e)[:120]))
+                    continue
+                raise
+            if not os.path.exists(os.path.join(OUT, "raw_sample.csv")):
+                save("raw_sample.csv", "\n".join(text.split("\n")[:60]) + "\n")
+            part, header = parse_csv(text)
+            rows += part
+            log("downloaded with %s | rows: %d | requests made: %d" % (how, len(part), CALLS[0]))
         if not rows:
             log("the download held no observations")
             finish(1)
-        # regions by code (structure known) or by label
-        areas_seen = {}
         for r in rows:
             areas_seen[r["area"][0]] = r["area"][1]
-        if not chosen:
+        if not any(cands.values()):   # structure unknown: regions by name from what was downloaded
             for rk, _ in REGIONS:
-                c = [(code, nm) for code, nm in areas_seen.items() if region_key(nm) == rk]
-                if c:
-                    best = pick_best(c)
-                    chosen[rk] = best
-                    code_region[best[0]] = rk
-            log("regions picked by name from %d areas in the download: %s" % (len(areas_seen), "; ".join("%s=%s" % (rk, chosen[rk][0]) for rk in chosen) or "none"))
+                cands[rk] = sorted((code, nm) for code, nm in areas_seen.items() if region_key(nm) == rk)
+            log("regions picked by name from %d areas in the download: %s" % (len(areas_seen), "; ".join("%s=%s" % (rk, ",".join(c for c, _ in cands[rk])) for rk, _ in REGIONS if cands[rk]) or "none"))
         for rk, nm in REGIONS:
-            if rk not in chosen:
+            if not cands[rk]:
                 log("WARNING: no area named %s was found" % nm)
+        code_region = {code: rk for rk in cands for code, _ in cands[rk]}
+        series, years, dup, statuses, comm_names = collect(rows, code_region, measure_for)
+        count = Counter()
+        for sr in series.values():
+            if any(v is not None for v in sr["vals"].values()):
+                count[(sr["region"], sr["code"])] += 1
+        chosen, lacking = {}, []
+        for rk, nm in REGIONS:
+            if not cands[rk]:
+                continue
+            withdata = [c for c in cands[rk] if count[(rk, c[0])] > 0]
+            if withdata:
+                exact = dict(REGIONS)[rk].lower()   # the name shown in the Data Explorer filter comes first
+                chosen[rk] = sorted(withdata, key=lambda c: (0 if c[1].strip().lower() == exact else 1, -count[(rk, c[0])], 0 if "27" in c[1] or "27" in c[0] else 1, len(c[1]), c[0]))[0]
+                if len(cands[rk]) > 1:
+                    log("%s: areas with %s data: %s -> using %s" % (rk, measure_for[rk], ", ".join("%s=%d series" % (c, count[(rk, c)]) for c, _ in cands[rk] if count[(rk, c)]), chosen[rk][0]))
+            else:
+                lacking.append(rk)
         if not chosen:
             save("structure.txt", "areas in the download:\n" + "\n".join("%s: %s" % kv for kv in sorted(areas_seen.items())) + "\n")
+            log("no producer-price series for any of the three regions")
             finish(1)
-        series, years, dup, statuses, comm_names, units = {}, set(), 0, Counter(), {}, Counter()
-        for r in rows:
-            rk = code_region.get(r["area"][0])
-            if not rk or r["measure"][0] != MEASURE:
-                continue
-            comm_names[r["comm"][0]] = r["comm"][1] or comm_names.get(r["comm"][0], "")
-            k = "%s|%s|%s" % (rk, r["comm"][0], r["unit"][0])
-            s = series.setdefault(k, {"region": rk, "commodity": r["comm"][0], "name": r["comm"][1], "unit": r["unit"][1], "unitCode": r["unit"][0], "vals": {}})
-            if r["year"] in s["vals"] and s["vals"][r["year"]] != r["val"]:
-                dup += 1
-                continue
-            s["vals"][r["year"]] = r["val"]
-            years.add(r["year"])
-            statuses[r["status"] or "(none)"] += 1
-        years = sorted(years)
-        if not series:
-            log("no producer-price series for the chosen regions (measure %s)" % MEASURE)
-            finish(1)
+        for rk in lacking:
+            log("WARNING: %s has no %s series in this edition (areas tried: %s), so it is missing from the output" % (rk, measure_for[rk], ", ".join(c for c, _ in cands[rk])))
+        if lacking and st and st["measures"]:
+            try:
+                discover(flow, ver, dims, st, lacking, cands)
+            except Exception as e:
+                log("discovery could not be completed (%s)" % str(e)[:140])
         order = {rk: i for i, (rk, _) in enumerate(REGIONS)}
-        out_series = {}
+        out_series, units = {}, Counter()
         for k in sorted(series, key=lambda x: (order[series[x]["region"]], series[x]["commodity"], series[x]["unitCode"])):
-            s = series[k]
-            if not any(v is not None for v in s["vals"].values()):
+            sr = series[k]
+            if sr["region"] not in chosen or sr["code"] != chosen[sr["region"]][0] or not any(v is not None for v in sr["vals"].values()):
                 continue
-            out_series[k] = {"region": s["region"], "commodity": s["commodity"], "name": s["name"], "unit": s["unit"], "unitCode": s["unitCode"], "v": [s["vals"].get(y) for y in years]}
-            units[(s["region"], s["unit"] or s["unitCode"])] += 1
+            out_series["%s|%s|%s" % (sr["region"], sr["commodity"], sr["unitCode"])] = {"region": sr["region"], "commodity": sr["commodity"], "name": sr["name"], "unit": sr["unit"],
+                                                                                       "unitCode": sr["unitCode"], "measure": sr["measure"], "v": [sr["vals"].get(y) for y in years]}
+            units[(sr["region"], sr["unit"] or sr["unitCode"])] += 1
         missing = {rk: [c for c in USER_COMMODITIES if not any(v["region"] == rk and v["commodity"] == c for v in out_series.values())] for rk in chosen}
         log("series kept: %d | years %d-%d (%d) | observations with a status: %s | conflicting duplicates ignored: %d" % (len(out_series), years[0], years[-1], len(years), dict(statuses), dup))
         for rk, _ in REGIONS:
             if rk in chosen:
                 n = sum(1 for v in out_series.values() if v["region"] == rk)
-                log("   %-7s code %-6s %-22s series %3d | units: %s | of the %d commodities in your URL, missing: %s" % (rk, chosen[rk][0], chosen[rk][1][:22], n, "; ".join("%s x%d" % (u, c) for (r2, u), c in sorted(units.items()) if r2 == rk), len(USER_COMMODITIES), ", ".join(missing[rk]) or "none"))
-        for rk, _ in REGIONS:
-            if rk in chosen and not any(v["region"] == rk for v in out_series.values()):
-                log("WARNING: %s (%s) has no %s series in this edition, so it is missing from the output" % (rk, chosen[rk][0], MEASURE))
+                log("   %-7s code %-10s %-24s series %3d | units: %s | of the %d commodities in your URL, missing: %s" % (rk, chosen[rk][0], chosen[rk][1][:24], n, "; ".join("%s x%d" % (u, c) for (r2, u), c in sorted(units.items()) if r2 == rk), len(USER_COMMODITIES), ", ".join(missing[rk]) or "none"))
         extra = sorted({v["commodity"] for v in out_series.values()} - set(USER_COMMODITIES))
         if extra:
             log("commodities in the data that are not in your original URL: %s" % ", ".join(extra))
-        result = {"source": "OECD-FAO Agricultural Outlook %s (OECD Data Explorer): projected producer prices" % edition, "dataflow": "%s,%s,%s" % (AGENCY, flow, ver),
-                  "edition": edition, "projectionStart": ed[0], "measure": MEASURE, "meta": {"constraintHash": chash, "formatVersion": FORMAT_VERSION},
+        result = {"source": "OECD-FAO Agricultural Outlook %s (OECD Data Explorer): projected prices" % edition, "dataflow": "%s,%s,%s" % (AGENCY, flow, ver),
+                  "edition": edition, "projectionStart": ed[0], "measure": MEASURE, "measures": {rk: measure_for[rk] for rk in chosen}, "noData": lacking,
+                  "meta": {"constraintHash": chash, "formatVersion": FORMAT_VERSION},
                   "years": years, "regions": {rk: {"code": chosen[rk][0], "label": chosen[rk][1]} for rk, _ in REGIONS if rk in chosen},
                   "commodities": {c: comm_names.get(c, "") for c in sorted({v["commodity"] for v in out_series.values()})}, "series": out_series, "missing": missing}
         # coverage and structure files
@@ -450,7 +525,9 @@ def main():
                 cellv.append("%d-%d" % (min(y for y, a in zip(years, m[0]["v"]) if a is not None), max(y for y, a in zip(years, m[0]["v"]) if a is not None)) if m else "")
             w.writerow([c, comm_names.get(c, "")] + cellv + [" | ".join(sorted(us))])
         save("coverage.csv", buf.getvalue())
-        save("structure.txt", "dimensions: %s\nareas in the download (%d):\n%s\n" % (".".join(dims), len(areas_seen), "\n".join("  %s: %s" % kv for kv in sorted(areas_seen.items()))))
+        save("structure.txt", "dimensions: %s\n\nmeasures in this edition (%d):\n%s\n\ncandidate areas per region:\n%s\n\nareas in the download (%d):\n%s\n" % (
+            ".".join(dims), len((st or {}).get("measures", {})), "\n".join("  %s: %s" % kv for kv in sorted((st or {}).get("measures", {}).items())),
+            "\n".join("  %s: %s" % (rk, "; ".join("%s=%s" % c for c in cands[rk]) or "none") for rk, _ in REGIONS), len(areas_seen), "\n".join("  %s: %s" % kv for kv in sorted(areas_seen.items()))))
         same_flow = flow in prev.get("dataflow", "")
         if prev.get("series") and same_flow and len(out_series) < 0.5 * len(prev["series"]):
             log("only %d series vs %d before - NOT overwriting %s" % (len(out_series), len(prev["series"]), RESULT))
