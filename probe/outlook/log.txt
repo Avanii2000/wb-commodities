@@ -1,17 +1,18 @@
 editions listed by the OECD: 2021-2030, 2022-2031, 2023-2032, 2024-2033, 2025-2034, 2026-2035 | using 2026-2035 (DSD_AGR@DF_OUTLOOK_2026_2035, agency OECD.TAD.ATM)
+measure overrides: World=WP
 several areas look like Europe: EU=European Union; EU00=European Union (evolving composition); EU00_X=European Union (evolving composition) unspecified; EU13OECD=European Union (13 countries) in OECD; EU14OECD=European Union (14 countries) in OECD; EU15=European Union (15 countries); EU19OECD=European Union (19 countries) in OECD; EU20OECD=European Union (20 countries) in OECD; EU21OECD=European Union (21 countries) in OECD; EU22OECD=European Union (22 countries) in OECD; EU22OECD_2020=European Union (22 countries) in OECD (from 01/02/2020); EU23OECD=European Union (23 countries) in OECD; EU25=European Union (25 countries); EU27=European Union (27 countries); EU27_2020=European Union (27 countries from 01/02/2020); EU28=European Union (28 countries); EU28XEU15=European Union 28 excluding European Union 15 countries; EUOECD=European Union countries in OECD; EU_X=European Union unspecified
 several areas look like US: UMI=United States Minor Outlying Islands; USA=United States; VIR=United States Virgin Islands
 several areas look like World: W=World; WB=World marine and aviation bunkers; WBA=World aviation bunkers; WBM=World marine bunkers; W_IO=World and international organisations; W_X=World unspecified
 dimensions: REF_AREA.FREQ.COMMODITY.MEASURE.UNIT_MEASURE.VERSION_ID | key: EU+EU00+EU00_X+EU13OECD+EU14OECD+EU15+EU19OECD+EU20OECD+EU21OECD+EU22OECD+EU22OECD_2020+EU23OECD+EU25+EU27+EU27_2020+EU28+EU28XEU15+EUOEC... | measure PP (Producer price)
 downloaded with format=csvfilewithlabels | rows: 3127 | requests made: 4
+dimensions: REF_AREA.FREQ.COMMODITY.MEASURE.UNIT_MEASURE.VERSION_ID | key: W+WB+WBA+WBM+W_IO+W_X.A..WP.. | measure WP (World price)
+downloaded with format=csvfilewithlabels | rows: 1610 | requests made: 5
 Europe: areas with PP data: EU=35 series -> using EU
 US: areas with PP data: USA=36 series -> using USA
-WARNING: World has no PP series in this edition (areas tried: W, WB, WBA, WBM, W_IO, W_X), so it is missing from the output
-price-type measures in this edition: PP=Producer price; PRCS=Prices; WP=World price
-discovery download: 1610 rows | areas x price measures with data: 1 (see discovery.csv)
-   World has data in WP (World price): W - 35 commodities, US dollars per hectolitre | US dollars per tonne
-series kept: 71 | years 1990-2035 (46) | observations with a status: {'A': 3127} | conflicting duplicates ignored: 0
+World: areas with WP data: W=35 series -> using W
+series kept: 106 | years 1990-2035 (46) | observations with a status: {'A': 4737} | conflicting duplicates ignored: 0
    Europe  code EU         European Union           series  35 | units: National currency per hectolitre x2; National currency per tonne x33 | of the 40 commodities in your URL, missing: CPC_0143, CPC_01802, CPC_022, CPC_2222T2223, CPC_2351, CPC_EX_FHC, CPC_EX_AG_COM
    US      code USA        United States            series  36 | units: National currency per hectolitre x2; National currency per tonne x34 | of the 40 commodities in your URL, missing: CPC_0143, CPC_022, CPC_2222T2223, CPC_2226, CPC_EX_FHC, CPC_EX_AG_COM
-commodities in the data that are not in your original URL: CPC_01921, CPC_0221
+   World   code W          World                    series  35 | units: US dollars per hectolitre x2; US dollars per tonne x33 | of the 40 commodities in your URL, missing: CPC_0143, CPC_01801, CPC_01802, CPC_022, CPC_2222T2223, CPC_223, CPC_235, CPC_EX_AG_COM
+commodities in the data that are not in your original URL: CPC_01921, CPC_0221, CPC_1201, CPC_346
 wrote price_raw_outlook.json

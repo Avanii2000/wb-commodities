@@ -36,6 +36,7 @@ candidate areas per region:
   US: UMI=United States Minor Outlying Islands; USA=United States; VIR=United States Virgin Islands
   World: W=World; WB=World marine and aviation bunkers; WBA=World aviation bunkers; WBM=World marine bunkers; W_IO=World and international organisations; W_X=World unspecified
 
-areas in the download (2):
+areas in the download (3):
   EU: European Union
   USA: United States
+  W: World
