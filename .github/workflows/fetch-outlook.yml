@@ -1,0 +1,39 @@
+name: OECD-FAO Outlook projected prices
+on:
+  schedule:
+    - cron: "0 5 * * *"      # 05:00 UTC every day
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Download even if the OECD says nothing has changed"
+        type: boolean
+        default: false
+      edition:
+        description: "Outlook edition: latest, or for example 2021_2030"
+        type: string
+        default: "latest"
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FORCE: ${{ inputs.force && '1' || '' }}
+      OUTLOOK_EDITION: ${{ inputs.edition || 'latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch from the OECD
+        run: python3 scripts/fetch_outlook_prices.py
+      - name: Show log
+        if: always()
+        run: cat probe/outlook/log.txt >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Commit results
+        if: always()
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          for f in price_raw_outlook.json probe/outlook/log.txt probe/outlook/coverage.csv probe/outlook/structure.txt probe/outlook/raw_sample.csv probe/outlook/rejected_result.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          git diff --staged --quiet || (git commit -m "OECD-FAO Outlook projected prices" && git pull --rebase --autostash && git push)
