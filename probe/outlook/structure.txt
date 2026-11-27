@@ -1,0 +1,3 @@
+dimensions: REF_AREA.FREQ.COMMODITY.MEASURE.UNIT_MEASURE.VERSION_ID
+areas in the download (1):
+  USA: United States
