@@ -47,7 +47,8 @@ USER_COMMODITIES = ["CPC_0112", "CPC_0113", "CPC_0114T0119", "CPC_0141", "CPC_01
 FALLBACK_DIMS = ["REF_AREA", "FREQ", "COMMODITY", "MEASURE", "UNIT_MEASURE", "D6"]   # layout of the original URL: USA.A.<commodities>.PP..
 OUT = "probe/outlook"
 RESULT = "price_raw_outlook.json"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2   # bump whenever the logic or the output changes: a stored file from an older version is always refreshed
+DEFAULT_OVERRIDES = {"World": "WP"}   # the Outlook has no producer price for World; its "World price" measure (WP) is used instead
 LOG, CALLS = [], [0]
 CODE_RX = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
@@ -297,8 +298,8 @@ def parse_csv(text):
 
 
 def parse_overrides():
-    """OUTLOOK_MEASURES='World=PW,Europe=PP' lets a region use another measure than the default."""
-    out = {}
+    """Per-region measure: DEFAULT_OVERRIDES, which OUTLOOK_MEASURES (for example 'World=PP,Europe=PP') can replace."""
+    out = dict(DEFAULT_OVERRIDES)
     for part in os.environ.get("OUTLOOK_MEASURES", "").split(","):
         if "=" in part:
             k, v = part.split("=", 1)
